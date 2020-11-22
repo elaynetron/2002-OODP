@@ -1,41 +1,45 @@
-public abstract class User {
+package entity;
 
-	private String username;
-	private String password;
+import java.io.Serializable;
 
+import control.PasswordMgr;
+
+public abstract class User implements Serializable{
 	/**
 	 * 
-	 * @param username
-	 * @param password
 	 */
-	public void User(String username, String password) {
-		// TODO - implement User.User
-		this.username = username;
-		this.password = password;
-	} 
+	private static final long serialVersionUID = 1L;
+	private String username;
+	private byte[] hashedPassword;
+	private byte[] salt;
+	
+	public User(String username, String password) {
+		this.setUsername(username);
+		this.setSalt();
+		this.setHashedPassword(password);
+	}
 
 	public String getUsername() {
 		return this.username;
 	}
 
-	/**
-	 * 
-	 * @param username
-	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return this.password;
+	public byte[] getSalt() {
+		return this.salt;
+	}
+	
+	public void setSalt() {
+		this.salt = PasswordMgr.getNextSalt();
+	}
+	
+	public byte[] getHashedPassword() {
+		return this.hashedPassword;
 	}
 
-	/**
-	 * 
-	 * @param password
-	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public void setHashedPassword(String password) {
+		this.hashedPassword = PasswordMgr.hash(password, this.salt);
 	}
-
 }
