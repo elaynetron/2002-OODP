@@ -24,7 +24,7 @@ public class LoginUI {
 			System.out.println("Please select:\n"
 					+ "[1] Login as Admin\n"
 					+ "[2] Login as Student\n"
-					+ "[3] Back"
+					+ "[3] Back\n"
 					+ "[4] Quit Application");
 			try {
 				choice = Integer.parseInt(sc.nextLine());
@@ -58,6 +58,7 @@ public class LoginUI {
 					
 				case 4:
 					System.out.println("Quitting Application...\n");
+					System.exit(0);
 					break;
 					
 				default:
