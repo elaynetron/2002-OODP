@@ -169,15 +169,15 @@ public class StudentUI extends CourseUI {
 	private void swapIndexNumUI() {
 		System.out.println("[5] Swap course index number selected. ");
 		
-		String peerMatricNum = null;
-		boolean validPeerMatricNum = false;
+		String peerUsername = null;
+		boolean validPeerUsername = false;
 		do {
-			System.out.println("Enter peer's matriculation number: ");
-			peerMatricNum = sc.nextLine();
-			validPeerMatricNum = this.studentMgr.isExistingStudent(peerMatricNum);
-			if (!validPeerMatricNum) System.out.println("Student does not exist, please try again. ");
-		} while (!validPeerMatricNum);
-		Student peer = this.studentMgr.getStudent(peerMatricNum);
+			System.out.println("Enter peer's username: ");
+			peerUsername = sc.nextLine();
+			validPeerUsername = this.studentMgr.isExistingStudent(peerUsername);
+			if (!validPeerUsername) System.out.println("Student does not exist, please try again. ");
+		} while (!validPeerUsername);
+		Student peer = this.studentMgr.getStudent(peerUsername);
 		
 		String courseCode = null;
 		boolean validCourse = false;
