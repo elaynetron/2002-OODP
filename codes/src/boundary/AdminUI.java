@@ -19,7 +19,7 @@ public class AdminUI {
         int choice = 0;
 
         AdminMgr adminMgr = new AdminMgr();
-        System.out.format("Welcome, Admin %s", admin.getAdminName());
+        System.out.format("Welcome, Admin %s", admin.getUsername());
         do {
             System.out.println("Please select:\n"
                     + "[1] Edit Student Access Period\n"
@@ -173,10 +173,7 @@ public class AdminUI {
 
     private void updateCourseUI(){
         int choice = 0;
-        String courseCode;
         System.out.println("Updating Course... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
         AdminMgr AdminMgr = new AdminMgr();
 
         do {
