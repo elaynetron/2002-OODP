@@ -1,219 +1,280 @@
 package boundary;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Scanner;
+
+import control.StudentMgr;
+import entity.Student;
 
 public class StudentUI extends CourseUI {
 
 	private Scanner sc;
 	private Student student;
+	private StudentMgr studentMgr;
 
 	/**
 	 * 
 	 * @param sc
 	 * @param student
 	 */
-	public void StudentUI(Scanner sc, Student student) {
-		// TODO - implement StudentUI.StudentUI
+	public StudentUI(Scanner sc, Student student) {
 		this.sc = sc;
 		this.student = student;
+		this.studentMgr = new StudentMgr(student);
 		//displayStudentUI();
 	}
 
-	public void displayStudentUI() {
-		// TODO - implement StudentUI.displayStudentUI
-		int choice;
+	public void displayStudentUI() throws ParseException, IOException {
+		int choice = 0;
+		
+		StudentUILoop:
 		do {
 			System.out.println("Welcome to STARS " + student.getFirstName());
-			System.out.println("Choose what you want to do. ");
-			System.out.println("(1) Add course");
-			System.out.println("(2) Drop course");
-			System.out.println("(3) Check courses registered");
-			System.out.println("(4) Change course index number");
-			System.out.println("(5) Swap course index number");
-			System.out.println("(6) Send notification");
-			System.out.println("(7) Check vacancies available");
-			System.out.println("(8) Exit");
-			choice = sc.nextInt();
+			System.out.println("Please select: ");
+			System.out.println("[1] Add course");
+			System.out.println("[2] Drop course");
+			System.out.println("[3] Check courses registered");
+			System.out.println("[4] Change course index number");
+			System.out.println("[5] Swap course index number");
+			System.out.println("[6] Send notification");
+			System.out.println("[7] Check vacancies available");
+			System.out.println("[8] Back");
+			System.out.println("[9] Quit Application");
 			
-			switch(choice) {
-			case 1:
-				addCourseUI();
-				break;
-			case 2:
-				dropCourseUI();
-				break;
-			case 3:
-				checkCoursesRegisteredUI();
-				break;
-			case 4:
-				addCourseUI();
-				break;
-			case 5:
-				addCourseUI();
-				break;
-			case 6:
-				addCourseUI();
-				break;
-			case 7:
-				checkVacanciesUI();
-				break;
+			try {
+				choice = Integer.parseInt(sc.nextLine());
+				
+				switch(choice) {
+				case 1:
+					addCourseUI();
+					break;
+				case 2:
+					dropCourseUI();
+					break;
+				case 3:
+					checkCoursesRegisteredUI();
+					break;
+				case 4:
+					changeIndexNumUI();
+					break;
+				case 5:
+					swapIndexNumUI();
+					break;
+				case 6:
+					chooseNotificationUI();
+					break;
+				case 7:
+					checkVacanciesUI();
+					break;
+				case 8:
+					break StudentUILoop;
+				case 9:
+					System.out.println("Quitting Application...\n");
+					System.exit(0);
+				default:
+					System.out.println("Invalid, please try again.\n");
+				}
 			}
-			case 8:
-				System.out.println("Exiting program...");
+			catch (Exception e) {
+				System.out.println("Invalid, please try again.\n");
+			}
 			
-		}while(choice < 8);
+		}while(choice != 9);
 	}
 
-	private void addCourseUI() {
-		// TODO - implement StudentUI.addCourseUI
-		System.out.println("Add course selected. ");
-		System.out.println("Enter course code: ");
-		try{
-			String courseCode = sc.nextLine();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		System.out.println("Enter index number: ");
-		try{
-			int indexNum = sc.nextInt();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		addCourse(courseCode,indexNum);
+	private void addCourseUI() throws ParseException, IOException {
+		System.out.println("[1] Add course selected ");
+		String courseCode = null;
+		boolean validCourse = false;
+		
+		do {
+			System.out.println("Enter course code: ");
+			courseCode = sc.nextLine();
+			validCourse = this.studentMgr.validateCourse(courseCode);
+			if (!validCourse) System.out.println("Course does not exist, please try again. ");
+		} while (!validCourse);
+		
+		boolean exception = false;
+		boolean validIndexNum = false;
+		int indexNum = 0;
+		do {
+			System.out.println("Enter index number: ");
+			try{
+				indexNum = Integer.parseInt(sc.nextLine());
+			}			
+			catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+				exception = true;
+			}
+			if (!exception) { // input is valid (integer)
+				validIndexNum = this.studentMgr.validateIndexNum(courseCode, indexNum);
+			}
+		} while (!validIndexNum);
+		this.studentMgr.addCourse(courseCode,indexNum);
 	}
 
 	private void dropCourseUI() {
-		// TODO - implement StudentUI.dropCourseUI
-		System.out.println("Drop course selected. ");
-		System.out.println("Enter course code: ");
-		try{
-			String courseCode = sc.nextLine();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		dropCourse(courseCode);
+		System.out.println("[2] Drop course selected. ");
+		String courseCode = null;
+		boolean validCourse = false;
+		
+		do {
+			System.out.println("Enter course code: ");
+			courseCode = sc.nextLine();
+			validCourse = this.studentMgr.validateCourse(courseCode);
+			if (!validCourse) System.out.println("Course does not exist, please try again. ");
+		} while (!validCourse);
+		
+		this.studentMgr.dropCourse(courseCode);
 	}
 
 	private void checkCoursesRegisteredUI() {
-		// TODO - implement StudentUI.checkCoursesRegisteredUI
-		System.out.println("Check courses registered selected. ");
-		checkCoursesRegistered();
+		System.out.println("[3] Check courses registered selected. ");
+		this.studentMgr.checkCoursesRegistered();
 	}
 
 	private void changeIndexNumUI() {
-		// TODO - implement StudentUI.changeIndexNumUI
-		System.out.println("Change course index number selected ");
-		System.out.println("Enter course code: ");
-		try{
-			String courseCode = sc.nextLine();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		System.out.println("Enter index number: ");
-		try{
-			int indexNum = sc.nextInt();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		changeIndexNum(courseCode,indexNum);
+		System.out.println("[4] Change course index number selected ");
+		
+		String courseCode = null;
+		boolean validCourse = false;
+		do {
+			System.out.println("Enter course code: ");
+			courseCode = sc.nextLine();
+			validCourse = this.studentMgr.validateCourse(courseCode);
+			if (!validCourse) System.out.println("Course does not exist, please try again. ");
+		} while (!validCourse);
+		
+		boolean exception = false;
+		boolean validIndexNum = false;
+		int indexNum = 0;
+		
+		do {
+			System.out.println("Enter index number: ");
+			try{
+				indexNum = Integer.parseInt(sc.nextLine());
+			}			
+			catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+				exception = true;
+			}
+			if (!exception) { // input is valid (integer)
+				validIndexNum = this.studentMgr.validateIndexNum(courseCode, indexNum);
+			}
+		} while (!validIndexNum);
+		
+		this.studentMgr.changeIndexNum(courseCode,indexNum);
 	}
 
 	private void swapIndexNumUI() {
-		// TODO - implement StudentUI.swopIndexNumUI
-		System.out.println("Swap course index number selected. ");
-		System.out.println("Enter peer's matriculation number: ");
-		try{
-			String matricNum = sc.nextLine();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		System.out.println("Enter course code: ");
-		try{
-			String courseCode = sc.nextLine();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		System.out.println("Enter your own index number: ");
-		try{
-			int indexNum1 = sc.nextInt();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		System.out.println("Enter your peer's index number: ");
-		try{
-			int indexNum2 = sc.nextInt();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		Student peer = ;//get student from matric number method
-		swapIndexNum(peer,courseCode,indexNum1,indexNum2);
+		System.out.println("[5] Swap course index number selected. ");
+		
+		String peerMatricNum = null;
+		boolean validPeerMatricNum = false;
+		do {
+			System.out.println("Enter peer's matriculation number: ");
+			peerMatricNum = sc.nextLine();
+			validPeerMatricNum = this.studentMgr.isExistingStudent(peerMatricNum);
+			if (!validPeerMatricNum) System.out.println("Student does not exist, please try again. ");
+		} while (!validPeerMatricNum);
+		Student peer = this.studentMgr.getStudent(peerMatricNum);
+		
+		String courseCode = null;
+		boolean validCourse = false;
+		do {
+			System.out.println("Enter course code: ");
+			courseCode = sc.nextLine();
+			validCourse = this.studentMgr.validateCourse(courseCode);
+			if (!validCourse) System.out.println("Course does not exist, please try again. ");
+		} while (!validCourse);
+		
+		boolean exception = false;
+		boolean validIndexNum = false;
+		int selfIndexNum = 0;
+		
+		do {
+			System.out.println("Enter your index number: ");
+			try{
+				selfIndexNum = Integer.parseInt(sc.nextLine());
+			}			
+			catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+				exception = true;
+			}
+			if (!exception) { // input is valid (integer)
+				validIndexNum = this.studentMgr.validateIndexNum(courseCode, selfIndexNum);
+			}
+		} while (!validIndexNum);
+		
+		exception = false;
+		validIndexNum = false;
+		int peerIndexNum = 0;
+		
+		do {
+			System.out.println("Enter peer's index number: ");
+			try{
+				peerIndexNum = Integer.parseInt(sc.nextLine());
+			}			
+			catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+				exception = true;
+			}
+			if (!exception) { // input is valid (integer)
+				validIndexNum = this.studentMgr.validateIndexNum(courseCode, peerIndexNum);
+			}
+		} while (!validIndexNum);
+		
+		this.studentMgr.swapIndexNum(peer, courseCode, selfIndexNum, peerIndexNum);
 	}
 
 	public void chooseNotificationUI() {
-		// TODO - implement StudentUI.chooseNotificationUI
-		System.out.println("Send notification selected. ");
+		System.out.println("[6] Send notification selected. ");
 		System.out.println("Choose notification to send. ");
-		System.out.println("(1) Send Email");
-		System.out.println("(2) Send SMS");
-		System.out.println("(3) Send Whatsapp");
-		System.out.println("(4) Exit");
-		choice = sc.nextInt();
+		System.out.println("[1] Send Email");
+		System.out.println("[2] Send SMS");
+		System.out.println("[3] Send Whatsapp");
 		
-		switch(choice) {
-		case 1:
-			sendEmail(student,courseCode);
-			System.out.println("Email sent");
-			break;
-		case 2:
-			sendSMS(student,courseCode);
-			System.out.println("SMS sent");
-			break;
-		case 3:
-			sendWhatsapp(student,courseCode);
-			System.out.println("Whatsapp sent");
-			break;
-		case 4:
-			System.out.println("Exiting");
-			break;
-		}
-
+		int choice = 0;
+		do {
+			try{
+				choice = Integer.parseInt(sc.nextLine());
+			}			
+			catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+			}
+		} while (choice < 1 | choice > 3);
+		this.studentMgr.chooseNotification(choice);
 	}
 	
 	public void checkVacanciesUI() {
-		System.out.println("Enter course code: ");
-		try{
-			String courseCode = sc.nextLine();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		System.out.println("Enter index number: ");
-		try{
-			int indexNum = sc.nextInt();
-		}
-		catch (Exception e) {
-			System.out.println("Invalid entry. ");
-			displayStudentUI();
-		}
-		checkVacancies(courseCode,indexNum);
+		System.out.println("[7] Check vacancies available selected. ");
+		
+		String courseCode = null;
+		boolean validCourse = false;
+		do {
+			System.out.println("Enter course code: ");
+			courseCode = sc.nextLine();
+			validCourse = this.studentMgr.validateCourse(courseCode);
+			if (!validCourse) System.out.println("Course does not exist, please try again. ");
+		} while (!validCourse);
+		
+		boolean exception = false;
+		boolean validIndexNum = false;
+		int indexNum = 0;
+		do {
+			System.out.println("Enter index number: ");
+			try{
+				indexNum = Integer.parseInt(sc.nextLine());
+			}			
+			catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+				exception = true;
+			}
+			if (!exception) { // input is valid (integer)
+				validIndexNum = this.studentMgr.validateIndexNum(courseCode, indexNum);
+			}
+		} while (!validIndexNum);
+		this.studentMgr.checkVacancies(courseCode,indexNum);
 	}
 
 }
