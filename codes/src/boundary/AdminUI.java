@@ -52,7 +52,7 @@ public class AdminUI extends CourseUI{
                     case 6:
                         addCourseUI();
                     case 7:
-                        checkIndexVacancyUI();
+                        checkVacanciesUI();
                     case 8:
                         updateCourseUI();
                     case 9:
@@ -161,15 +161,6 @@ public class AdminUI extends CourseUI{
         System.out.format("New Course %s Added", courseCode);
     }
 
-    private void checkIndexVacancyUI(){
-        String courseCode, indexNum;
-        System.out.println("Checking Index Vacancy");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
-        System.out.print("Index Number: ");
-        indexNum = sc.nextLine();
-        AdminMgr.checkIndexVacancy(courseCode, indexNum);
-    }
 
     private void updateCourseUI(){
         int choice = 0;
