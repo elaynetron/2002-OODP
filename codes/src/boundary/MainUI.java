@@ -5,10 +5,10 @@ import java.text.ParseException;
 import java.util.Scanner;
 
 public class MainUI {
-	private Scanner sc;
+	private static Scanner sc;
 	
-	public void main(String[] args) throws IOException, ParseException {
-		this.sc = new Scanner(System.in);
+	public static void main(String[] args) throws IOException, ParseException {
+		sc = new Scanner(System.in);
 		int choice = 0;
 		// Can add MainUI functions other than login for future extensions here
 		do {
@@ -20,7 +20,7 @@ public class MainUI {
 				choice = Integer.parseInt(sc.nextLine());
 				switch (choice) {
 				case 1: // Login
-					new LoginUI(this.sc);
+					new LoginUI(sc);
 					break;
 					
 				case 2:
