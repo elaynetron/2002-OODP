@@ -39,6 +39,7 @@ public class LoginUI {
 						validation = loginMgr.validateAdmin(username, password);
 						System.out.println(validation);
 					} while (!(validation == "Successful login!"));
+					new AdminUI(this.sc, loginMgr.getAdmin(username));
 					break;
 					
 				case 2: //Student
@@ -51,6 +52,7 @@ public class LoginUI {
 						validation = loginMgr.validateStudent(username, password);
 						System.out.println(validation);
 					} while (!(validation == "Successful login!"));
+					new StudentUI(this.sc, loginMgr.getStudent(username));
 					break;
 					
 				case 3:
