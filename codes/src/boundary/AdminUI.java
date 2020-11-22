@@ -6,7 +6,7 @@ import java.util.Scanner;
 import control.AdminMgr;
 import entity.Admin;
 
-public class AdminUI {
+public class AdminUI extends CourseUI{
     private Scanner sc;
     private Admin admin;
     public AdminUI(Scanner sc, Admin admin) throws ParseException, IOException {
