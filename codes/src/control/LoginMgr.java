@@ -10,7 +10,7 @@ public class LoginMgr {
 	public String validateAdmin(String username, String password) throws EOFException, ClassNotFoundException, IOException {;
 		ArrayList<Admin> adminList = DataMgr.readAdminList();
 		for (Admin admin: adminList) {
-			if (admin.getUsername() == username) {
+			if (admin.getUsername().compareTo(username) == 0) {
 				if (PasswordMgr.isExpectedPassword(password, admin.getSalt(), admin.getHashedPassword())) return "Successful login!";
 				else return "Wrong password!";
 			}
@@ -21,7 +21,7 @@ public class LoginMgr {
 	public Admin getAdmin(String username) throws EOFException, ClassNotFoundException, IOException {
 		ArrayList<Admin> adminList = DataMgr.readAdminList();
 		for (Admin admin: adminList) {
-			if (admin.getUsername() == username) return admin;
+			if (admin.getUsername().compareTo(username) == 0) return admin;
 		}
 		return null; 
 	}
@@ -29,21 +29,22 @@ public class LoginMgr {
 	public String validateStudent(String username, String password) throws EOFException, ClassNotFoundException, IOException {
 		ArrayList<Student> studentList = DataMgr.readStudentList();
 		for (Student student: studentList) {
-			if (student.getUsername() == username) {
+			if (student.getUsername().compareTo(username) == 0) {
+				System.out.println(password);
 				if (PasswordMgr.isExpectedPassword(password, student.getSalt(), student.getHashedPassword())) {
 					if (validateAccessTime(student)) return "Successful login!";
-					else return "Invalid Access Time!";
+					return "Invalid Access Time!";
 				}
-				else return "Wrong password!";
+				return "Wrong password!";
 			}
 		}
 		return "Invalid user!";
 	}
 
-	public Student getStudent(String matricNum) throws EOFException, ClassNotFoundException, IOException {
+	public Student getStudent(String username) throws EOFException, ClassNotFoundException, IOException {
 		ArrayList<Student> studentList = DataMgr.readStudentList();
 		for (Student student: studentList) {
-			if (student.getUsername() == matricNum) return student;
+			if (student.getUsername().compareTo(username) == 0) return student;
 		}
 		return null; 
 	}
