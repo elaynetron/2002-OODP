@@ -7,6 +7,7 @@ import entity.Student;
 import entity.RegisteredCourse;
 import entity.Course;
 
+
 public class AdminMgr extends CourseMgr{
     public static void editStudentAccessPeriod(String matricNum, Calendar startTime, Calendar endTime){
         ArrayList<Student> studentList = DataMgr.readStudentList();
@@ -39,7 +40,7 @@ public class AdminMgr extends CourseMgr{
 
     }
 
-    public static void printStudentListByCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException {
+    public static void printStudentListByCourse(String courseCode){
         ArrayList<Student> studentList = DataMgr.readStudentList();
         ArrayList<Student> newStudentList = null;
         ArrayList<RegisteredCourse> courseList;
@@ -47,14 +48,14 @@ public class AdminMgr extends CourseMgr{
             courseList = student.getCourseRegistered();
             for (RegisteredCourse course: courseList)
             {
-                if(course.getCourseCode == courseCode)
+                if(course.getCourseCode() == courseCode)
                  System.out.print(student.getFirstName()+" "+student.getLastName()+" "+student.getGender()+" "+student.getNationality());
             }
 
         }
     }
 
-    public static void printStudentListByIndex(String courseCode, String indexNum) throws EOFException, ClassNotFoundException, IOException {
+    public static void printStudentListByIndex(String courseCode, int indexNum){
         ArrayList<Student> studentList = DataMgr.readStudentList();
         ArrayList<Student> newStudentList = null;
         ArrayList<RegisteredCourse> courseList;
@@ -62,7 +63,7 @@ public class AdminMgr extends CourseMgr{
             courseList = student.getCourseRegistered();
             for (RegisteredCourse course: courseList)
             {
-                if(course.getCourseCode == courseCode && course.getIndex == indexNum)
+                if(course.getCourseCode() == courseCode && course.getIndex() == indexNum)
                     System.out.print(student.getFirstName()+" "+student.getLastName()+" "+student.getGender()+" "+student.getNationality());
             }
 
@@ -137,7 +138,7 @@ public class AdminMgr extends CourseMgr{
         }
     }
 
-    public static void addIndex(String courseCode, String indexNum){
+    public static void addIndex(String courseCode, int indexNum){
         ArrayList<Course> courseList = DataMgr.readCourseList();
         for (Course course: courseList) {
             if (course.getCourseCode() == courseCode) {
@@ -150,7 +151,7 @@ public class AdminMgr extends CourseMgr{
         }
     }
 
-    public static void deleteIndex(String courseCode, String indexNum){
+    public static void deleteIndex(String courseCode, int indexNum){
         ArrayList<Course> courseList = DataMgr.readCourseList();
         for (Course course: courseList) {
             if (course.getCourseCode() == courseCode) {
@@ -165,7 +166,7 @@ public class AdminMgr extends CourseMgr{
         }
     }
 
-    public static void updateVacancy(String courseCode, String indexNum, int newVacancy){
+    public static void updateVacancy(String courseCode, int indexNum, int newVacancy){
         ArrayList<Course> courseList = DataMgr.readCourseList();
         for (Course course: courseList) {
             if (course.getCourseCode() == courseCode) {
@@ -178,6 +179,15 @@ public class AdminMgr extends CourseMgr{
                 }
             }
         }
+    }
+
+    public static boolean validateMatric(String matricNum) {
+        ArrayList<Student> studentList = DataMgr.readStudentList();
+        for (Student student: studentList) {
+            if (student.getMatricNum() == matricNum)
+                return true;
+        }
+        return false;
     }
 
 
