@@ -3,6 +3,7 @@ package database;
 import java.io.*;
 import java.util.*;
 
+import entity.Admin;
 import entity.Course;
 import entity.Index;
 import entity.Lesson;
@@ -42,22 +43,22 @@ public class GenerateTestCases {
 		while (!oneline.isEmpty()) {
 			onelineArray = oneline.split(">");
 			startDateTime = onelineArray[10];
-			year = Integer.parseInt(startDateTime.substring(0, 2));
-			month = Integer.parseInt(startDateTime.substring(2, 4));
-			date = Integer.parseInt(startDateTime.substring(4, 8));
+			date = Integer.parseInt(startDateTime.substring(0, 2));
+			month = Integer.parseInt(startDateTime.substring(2, 4))-1;
+			year = Integer.parseInt(startDateTime.substring(4, 8));
 			hour = Integer.parseInt(startDateTime.substring(9, 11));
 			minute = Integer.parseInt(startDateTime.substring(12));
-			start.clear(); // reset
-			start.set(year, month, date, hour, minute);
+			start.clear();
+			start.set(year, month, date, hour, minute, 0);
 			
-			endDateTime = onelineArray[10];
-			year = Integer.parseInt(endDateTime.substring(0, 2));
-			month = Integer.parseInt(endDateTime.substring(2, 4));
-			date = Integer.parseInt(endDateTime.substring(4, 8));
+			endDateTime = onelineArray[11];
+			date = Integer.parseInt(endDateTime.substring(0, 2));
+			month = Integer.parseInt(endDateTime.substring(2, 4))-1;
+			year = Integer.parseInt(endDateTime.substring(4, 8));
 			hour = Integer.parseInt(endDateTime.substring(9, 11));
 			minute = Integer.parseInt(endDateTime.substring(12));
-			end.clear(); // reset
-			end.set(year, month, date, hour, minute);
+			end.clear();
+			end.set(year, month, date, hour, minute, 0);
 			
 			student = new Student(onelineArray[1], onelineArray[2], onelineArray[3], onelineArray[4], onelineArray[5], onelineArray[6].charAt(0), onelineArray[7], Integer.parseInt(onelineArray[8]), onelineArray[9], start, end);
 			objectOut.writeObject((Object) student);
@@ -119,9 +120,21 @@ public class GenerateTestCases {
 			examDate.clear(); // reset
 			examDate.set(Integer.parseInt(courseInfo[5].substring(4)), Integer.parseInt(courseInfo[5].substring(2, 4)), Integer.parseInt(courseInfo[5].substring(0, 2)));
 			course = new Course(courseInfo[0], courseInfo[1], Integer.parseInt(courseInfo[2]), courseInfo[3], courseInfo[4], examDate, indexList);
+			objectOut.writeObject((Course) course);
 		} while (reader.hasNextLine());
 		
 		objectOut.close();
 		reader.close();
+		
+		// Admin class
+		try {
+            FileOutputStream fileOut = new FileOutputStream("db/adminList.dat");
+            objectOut = new ObjectOutputStream(fileOut);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		Admin admin = new Admin("ETAN074", "ADMINPW");
+		objectOut.writeObject((Admin) admin);
+		objectOut.close();
 	}
 }
