@@ -1,7 +1,13 @@
 package entity;
 
+import java.util.*;
+
 public class Student extends User {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String firstName;
 	private String lastName;
 	private String matricNum;
