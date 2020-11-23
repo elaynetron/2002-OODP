@@ -101,6 +101,7 @@ public class StudentUI extends CourseUI {
 			System.out.println("Enter index number: ");
 			try{
 				indexNum = Integer.parseInt(sc.nextLine());
+				exception = false;
 			}			
 			catch (Exception e) {
 				System.out.println("Invalid, please try again. ");
@@ -153,6 +154,7 @@ public class StudentUI extends CourseUI {
 			System.out.println("Enter index number: ");
 			try{
 				indexNum = Integer.parseInt(sc.nextLine());
+				exception = false;
 			}			
 			catch (Exception e) {
 				System.out.println("Invalid, please try again. ");
@@ -196,6 +198,7 @@ public class StudentUI extends CourseUI {
 			System.out.println("Enter your index number: ");
 			try{
 				selfIndexNum = Integer.parseInt(sc.nextLine());
+				exception = false;
 			}			
 			catch (Exception e) {
 				System.out.println("Invalid, please try again. ");
@@ -214,6 +217,7 @@ public class StudentUI extends CourseUI {
 			System.out.println("Enter peer's index number: ");
 			try{
 				peerIndexNum = Integer.parseInt(sc.nextLine());
+				exception = false;
 			}			
 			catch (Exception e) {
 				System.out.println("Invalid, please try again. ");
@@ -243,7 +247,19 @@ public class StudentUI extends CourseUI {
 				System.out.println("Invalid, please try again. ");
 			}
 		} while (choice < 1 | choice > 3);
-		this.studentMgr.chooseNotification(choice);
+		
+		switch (choice) {
+		case 1:
+			this.NotificationMgr.sendEmail(this.student);
+			break;
+		case 2:
+			this.NotificationMgr.sendSMS(this.student);
+			break;
+		case 3:
+			this.NotificationMgr.sendWhatsapp(this.student);
+			break;
+		}
+		
 	}
 	
 	public void checkVacanciesUI() {
@@ -265,6 +281,7 @@ public class StudentUI extends CourseUI {
 			System.out.println("Enter index number: ");
 			try{
 				indexNum = Integer.parseInt(sc.nextLine());
+				exception = false;
 			}			
 			catch (Exception e) {
 				System.out.println("Invalid, please try again. ");
