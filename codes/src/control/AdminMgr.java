@@ -1,9 +1,11 @@
+package control;
 
 import java.io.*;
 import java.util.*;
 
-import Admin;
-import Student;
+import entity.Student;
+import entity.RegisteredCourse;
+import entity.Course;
 
 public class AdminMgr extends CourseMgr{
     public static void editStudentAccessPeriod(String matricNum, Calendar startTime, Calendar endTime){
@@ -37,32 +39,35 @@ public class AdminMgr extends CourseMgr{
 
     }
 
-    public static ArrayList<Student> printStudentListByCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException {
+    public static void printStudentListByCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException {
         ArrayList<Student> studentList = DataMgr.readStudentList();
         ArrayList<Student> newStudentList = null;
-        ArrayList<Student> courseList;
+        ArrayList<RegisteredCourse> courseList;
         for (Student student: studentList) {
             courseList = student.getCourseRegistered();
-            if (courseList.contains(courseCode)){
-                newStudentList.add(student);
+            for (RegisteredCourse course: courseList)
+            {
+                if(course.getCourseCode == courseCode)
+                 System.out.print(student.getFirstName()+" "+student.getLastName()+" "+student.getGender()+" "+student.getNationality());
             }
 
         }
-        return newStudentList;
     }
 
-    public static ArrayList<Student> printStudentListByIndex(String courseCode, String indexNum) throws EOFException, ClassNotFoundException, IOException {
+    public static void printStudentListByIndex(String courseCode, String indexNum) throws EOFException, ClassNotFoundException, IOException {
         ArrayList<Student> studentList = DataMgr.readStudentList();
         ArrayList<Student> newStudentList = null;
-        ArrayList<Student> courseList;
+        ArrayList<RegisteredCourse> courseList;
         for (Student student: studentList) {
             courseList = student.getCourseRegistered();
-            if (courseList.contains(indexNum)){
-                newStudentList.add(student);
+            for (RegisteredCourse course: courseList)
+            {
+                if(course.getCourseCode == courseCode && course.getIndex == indexNum)
+                    System.out.print(student.getFirstName()+" "+student.getLastName()+" "+student.getGender()+" "+student.getNationality());
             }
 
         }
-        return newStudentList;
+
     }
 
     public static void addCourse(String courseCode, String courseName, int AU, String school, String courseType, Calendar examDate){
@@ -165,13 +170,12 @@ public class AdminMgr extends CourseMgr{
         for (Course course: courseList) {
             if (course.getCourseCode() == courseCode) {
                 ArrayList<Index> indexList= course.getIndexList;
-                for(Index index: indexList){
-                    if (index.getIndexNum() == indexNum){
+                for(Index index: indexList) {
+                    if (index.getIndexNum() == indexNum) {
                         index.setVacancy(newVacancy);
                         break;
                     }
                 }
-
             }
         }
     }
