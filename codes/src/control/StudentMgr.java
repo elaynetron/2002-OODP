@@ -1,4 +1,10 @@
 package control;
+import entity.*;
+
+import java.util.ArrayList;
+
+import boundary.StudentUI;
+
 public class StudentMgr extends CourseMgr {
 
 	private Student student;
@@ -7,7 +13,7 @@ public class StudentMgr extends CourseMgr {
 	 * 
 	 * @param student
 	 */
-	public void StudentMgr(Student student) {
+	public StudentMgr(Student student) {
 		// TODO - implement StudentMgr.StudentMgr
 		this.student = student;
 	}
@@ -20,12 +26,13 @@ public class StudentMgr extends CourseMgr {
 	public void addCourse(String courseCode, int indexNum) {
 		// TODO - implement StudentMgr.addCourse
 		int vacancy = super.checkVacancies(courseCode,indexNum);
-		if (vacancy > 0 && validateCourse(courseCode,indexNum) && validateIndexNum(courseCode,indexNum)) {
+		if (vacancy > 0 ) { // and checkclash???
 			Course c = ;//method to get course from coursecode?
-			Index i = ;//method to get index frmo indexnum int
+			Index i = ;//method to get index from indexnum int
 			RegisteredCourse toRegister = new RegisteredCourse(this.student,c,i,"Registered");
-			ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
-			toUpdate.add(toRegister);
+//			ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
+//			toUpdate.add(toRegister);
+			student.addToCoursesRegistered(toRegister);
 			System.out.println("Course successfully registered.");
 		}
 		else
@@ -53,7 +60,7 @@ public class StudentMgr extends CourseMgr {
 		Course c = ;//method to get course from coursecode
 		if (toUpdate.contains(c)) {
 			int index = toUpdate.indexOf(c);
-			toUpdate.remove(index);
+			student.removeFromCoursesRegistered(c, index);
 			System.out.println("Course dropped successfully.");
 		}
 		else
@@ -66,7 +73,7 @@ public class StudentMgr extends CourseMgr {
 		ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
 		for(int i = 0; i < toUpdate.size(); i++) {
 			RegisteredCourse c = toUpdate.get(i);
-			Index index = c.getIndex(i);
+			Index index = c.getIndex();
 			Course CourseToPrint = c.getCourse();
 			System.out.println(CourseToPrint.getCourseCode(),CourseToPrint.getCourseName(),index.getIndexNum(),index.getTutorialGrp()); // ??? Implement printing details from coursemgr?? LessonLIst?
 		}
@@ -79,7 +86,6 @@ public class StudentMgr extends CourseMgr {
 	 */
 	public void changeIndexNum(String courseCode, int indexNum) {
 		// TODO - implement StudentMgr.changeIndexNum
-		//check wheter index number valid first!!
 		ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
 		Course c = ;//method to get course from coursecode
 		if (toUpdate.contains(c)) {
@@ -128,8 +134,9 @@ public class StudentMgr extends CourseMgr {
 	 * 
 	 * @param notification
 	 */
-	public void chooseNotification(int notification) {//not sure about this part..
+	public void chooseNotification(int notificationChoice) {//not used?? since commands are in notificationMgr according to diagram
 		// TODO - implement StudentMgr.chooseNotification
+		
 		
 	}
 	
@@ -137,6 +144,38 @@ public class StudentMgr extends CourseMgr {
 		System.out.println("Course code: " + courseCode);
 		System.out.println("Index number: " + indexNum);
 		System.out.println("Number of vacancies: " + super.checkVacancies(courseCode,indexNum));
+	}
+	
+	public boolean isExistingStudent(String userName) {
+		ArrayList<Student> studentList = readStudentList(); // studentmgr extend coursemgr which uses datamgr shud be can use?
+		for (int i = 0; i<studentList.size(); i++) {
+			Student s = studentList.get(i);
+			if (s.getUsername() == userName)
+				return true;
+		}
+		return false;
+	}
+	
+	
+	public student getStudent(String userName) {
+		ArrayList<Student> studentList = readStudentList();
+		for (int i = 0; i<studentList.size(); i++) {
+			Student s = studentList.get(i);
+			if (s.getUsername() == userName)
+				return s;
+		}
+			
+	}
+	public void sendEmail() {
+		System.out.println("Email sent.");
+	}
+	
+	public void sendSMS() {
+		System.out.println("SMS sent.");
+	}
+	
+	public void sendWhatsapp() {
+		System.out.println("Whatsapp sent.");
 	}
 
 }
