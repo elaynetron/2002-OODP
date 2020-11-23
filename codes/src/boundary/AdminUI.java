@@ -268,7 +268,7 @@ public class AdminUI extends CourseUI{
         courseCode = sc.nextLine();
         System.out.print("New School: ");
         school = sc.nextLine();
-        AdminMgr.updateCourseName(courseCode, school);
+        AdminMgr.updateSchool(courseCode, school);
         System.out.format("Course %s/'s School Changed to %s", courseCode, school);
     }
 
