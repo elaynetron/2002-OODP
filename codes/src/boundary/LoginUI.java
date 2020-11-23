@@ -1,8 +1,13 @@
 package boundary;
 
+import java.io.Console;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+
 import control.LoginMgr;
 
 public class LoginUI {
@@ -15,10 +20,11 @@ public class LoginUI {
 
 	private void displayLoginUI() throws ParseException, IOException{
 		int choice = 0;
-		String username, password;
+		String username;
 		String validation;
 		LoginMgr loginMgr = new LoginMgr();
 		
+		Console console = System.console();
 		LoginUILoop:
 		do {
 			System.out.println("Please select:\n"
@@ -35,9 +41,23 @@ public class LoginUI {
 						System.out.print("Username: ");
 						username = sc.nextLine();
 						System.out.print("Password: ");
-						password = sc.nextLine();
-						validation = loginMgr.validateAdmin(username, password);
+						//password = sc.nextLine();
+						
+						// code to hide echo by opening up new pane
+						final String password, message = "Enter password";
+						if( System.console() == null ) 
+						{ // inside IDE like Eclipse or NetBeans
+						  final JPasswordField pf = new JPasswordField(); 
+						  password = JOptionPane.showConfirmDialog( null, pf, message,
+						    JOptionPane.OK_CANCEL_OPTION,
+						    JOptionPane.QUESTION_MESSAGE ) == JOptionPane.OK_OPTION ? 
+						      new String( pf.getPassword() ) : "";
+						}
+						else password = new String( System.console().readPassword( "%s> ", message ) );
+						
+						validation = loginMgr.validateAdmin(username, password.toString());
 						System.out.println(validation);
+						System.out.println();
 					} while (!(validation == "Successful login!"));
 					new AdminUI(this.sc, loginMgr.getAdmin(username));
 					break;
@@ -48,8 +68,21 @@ public class LoginUI {
 						System.out.print("Username: ");
 						username = sc.nextLine();
 						System.out.print("Password: ");
-						password = sc.nextLine();
-						validation = loginMgr.validateStudent(username, password);
+						//password = sc.nextLine();
+						
+						// code to hide echo by opening up new pane
+						final String password, message = "Enter password";
+						if( System.console() == null ) 
+						{ // inside IDE like Eclipse or NetBeans
+						  final JPasswordField pf = new JPasswordField(); 
+						  password = JOptionPane.showConfirmDialog( null, pf, message,
+						    JOptionPane.OK_CANCEL_OPTION,
+						    JOptionPane.QUESTION_MESSAGE ) == JOptionPane.OK_OPTION ? 
+						      new String( pf.getPassword() ) : "";
+						}
+						else password = new String( System.console().readPassword( "%s> ", message ) );
+						
+						validation = loginMgr.validateStudent(username, password.toString());
 						System.out.println(validation);
 					} while (!(validation == "Successful login!"));
 					new StudentUI(this.sc, loginMgr.getStudent(username));
