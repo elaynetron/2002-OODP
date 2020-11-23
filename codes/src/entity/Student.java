@@ -28,7 +28,7 @@ public class Student extends User {
 	 * @param start
 	 * @param end
 	 */
-	public void Student(String userName, String password, String firstName, String lastName, String matricNum, char gender, String nationality, int mobileNum, String email, Calendar start, Calendar end) {
+	public Student(String userName, String password, String firstName, String lastName, String matricNum, char gender, String nationality, int mobileNum, String email, Calendar start, Calendar end) {
 		// TODO - implement Student.Student
 		super(userName,password);
 		this.firstName = firstName;
@@ -176,6 +176,14 @@ public class Student extends User {
 	 */
 	public void setCoursesRegistered(ArrayList<RegisteredCourse> coursesRegistered) {
 		this.coursesRegistered = coursesRegistered;
+	}
+	
+	public void addToCoursesRegistered(RegisteredCourse course) {
+		this.coursesRegistered.add(course);
+	}
+	
+	public void removeFromCoursesRegistered(RegisteredCourse course,int i) {
+		this.coursesRegistered.remove(i);
 	}
 
 }
