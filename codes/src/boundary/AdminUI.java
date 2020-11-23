@@ -53,7 +53,7 @@ public class AdminUI extends CourseUI{
                     case 6:
                         addCourseUI();
                     case 7:
-                        checkIndexVacancyUI();
+                        checkVacanciesUI();
                     case 8:
                         updateCourseUI();
                     case 9:
