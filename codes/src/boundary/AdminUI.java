@@ -3,6 +3,7 @@ package boundary;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Scanner;
+import java.util.Calendar
 import control.AdminMgr;
 import entity.Admin;
 
@@ -52,7 +53,7 @@ public class AdminUI extends CourseUI{
                     case 6:
                         addCourseUI();
                     case 7:
-                        checkVacanciesUI();
+                        checkIndexVacancyUI();
                     case 8:
                         updateCourseUI();
                     case 9:
@@ -73,20 +74,48 @@ public class AdminUI extends CourseUI{
 
     private void editStudentAccessPeriodUI(){
         String matricNum;
-        String startTime, endTime;
+        int startYear, startMonth, startDay, startHour, startMinute;
+        Calendar startTime = Calendar.getInstance();
+        int endYear, endMonth, endDay, endHour, endMinute;
+        Calendar endTime = Calendar.getInstance();
         System.out.println("Editing Student Access Period... ");
         System.out.print("Student Matric Number: ");
         matricNum = sc.nextLine();
-        System.out.print("Start: ");
-        startTime = sc.nextLine();
-        System.out.print("End: ");
-        endTime = sc.nextLine();
+        System.out.print("Access Period Start: ");
+        System.out.print("Year: ");
+        startYear = Integer.parseInt(sc.nextLine());
+        System.out.print("Month: ");
+        startMonth = Integer.parseInt(sc.nextLine());
+        System.out.print("Day: ");
+        startDay = Integer.parseInt(sc.nextLine());
+        System.out.print("Hour: ");
+        startHour = Integer.parseInt(sc.nextLine());
+        System.out.print("Minute ");
+        startMinute = Integer.parseInt(sc.nextLine());
+        startTime.set(startYear, startMonth, startDay, startHour, startMinute);
+
+        System.out.print("Access Period End: ");
+        System.out.print("Year: ");
+        endYear = Integer.parseInt(sc.nextLine());
+        System.out.print("Month: ");
+        endMonth = Integer.parseInt(sc.nextLine());
+        System.out.print("Day: ");
+        endDay = Integer.parseInt(sc.nextLine());
+        System.out.print("Hour: ");
+        endHour = Integer.parseInt(sc.nextLine());
+        System.out.print("Minute ");
+        endMinute = Integer.parseInt(sc.nextLine());
+        endTime.set(endYear, endMonth, endDay, endHour, endMinute);
         AdminMgr.editStudentAccessPeriod(matricNum, startTime,endTime);
         System.out.format("New Period: %s to %s", startTime, endTime );
     }
 
     private void addStudentUI(){
         String username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email;
+        int startYear, startMonth, startDay, startHour, startMinute;
+        Calendar startDate = Calendar.getInstance();
+        int endYear, endMonth, endDay, endHour, endMinute;
+        Calendar endDate = Calendar.getInstance();
         System.out.println("Adding New Student... ");
         System.out.print("Student Username: ");
         username = sc.nextLine();
@@ -107,7 +136,33 @@ public class AdminUI extends CourseUI{
         System.out.print("Email: ");
         email = sc.nextLine();
 
-        AdminMgr.addStudent(username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email);
+        System.out.print("Access Period Start: ");
+        System.out.print("Year: ");
+        startYear = Integer.parseInt(sc.nextLine());
+        System.out.print("Month: ");
+        startMonth = Integer.parseInt(sc.nextLine());
+        System.out.print("Day: ");
+        startDay = Integer.parseInt(sc.nextLine());
+        System.out.print("Hour: ");
+        startHour = Integer.parseInt(sc.nextLine());
+        System.out.print("Minute ");
+        startMinute = Integer.parseInt(sc.nextLine());
+        startDate.set(startYear, startMonth, startDay, startHour, startMinute);
+
+        System.out.print("Access Period End: ");
+        System.out.print("Year: ");
+        endYear = Integer.parseInt(sc.nextLine());
+        System.out.print("Month: ");
+        endMonth = Integer.parseInt(sc.nextLine());
+        System.out.print("Day: ");
+        endDay = Integer.parseInt(sc.nextLine());
+        System.out.print("Hour: ");
+        endHour = Integer.parseInt(sc.nextLine());
+        System.out.print("Minute ");
+        endMinute = Integer.parseInt(sc.nextLine());
+        endDate.set(endYear, endMonth, endDay, endHour, endMinute);
+
+        AdminMgr.addStudent(username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email, startDate, endDate);
         System.out.format("New Student %s Created", username);
     }
     private void deleteStudentUI(){
@@ -140,9 +195,9 @@ public class AdminUI extends CourseUI{
 
     private void addCourseUI(){
         String courseCode, courseName, school, courseType;
-        //Calendar examDate = new Calendar();
-        String examDate;
         int AU;
+        int examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute;
+        Calendar examDate = Calendar.getInstance();
         System.out.println("Adding New Course... ");
         System.out.print("Course Code: ");
         courseCode = sc.nextLine();
@@ -154,13 +209,23 @@ public class AdminUI extends CourseUI{
         school = sc.nextLine();
         System.out.print("Course Type: ");
         courseType = sc.nextLine();
-        System.out.print("Exam Date");
-        examDate = sc.nextLine();
+
+        System.out.println("Exam Date");
+        System.out.print("Year: ");
+        examDateYear = Integer.parseInt(sc.nextLine());
+        System.out.print("Month: ");
+        examDateMonth = Integer.parseInt(sc.nextLine());
+        System.out.print("Day: ");
+        examDateDay = Integer.parseInt(sc.nextLine());
+        System.out.print("Hour: ");
+        examDateHour = Integer.parseInt(sc.nextLine());
+        System.out.print("Minute ");
+        examDateMinute = Integer.parseInt(sc.nextLine());
+        examDate.set(examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute);
 
         AdminMgr.addCourse(courseCode, courseName, AU, school, courseType, examDate);
         System.out.format("New Course %s Added", courseCode);
     }
-
 
     private void updateCourseUI(){
         int choice = 0;
@@ -284,12 +349,24 @@ public class AdminUI extends CourseUI{
     }
 
     private void updateExamDateUI(){
-        String courseCode, examDate;
+        String courseCode;
+        int examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute;
+        Calendar examDate = Calendar.getInstance();
         System.out.println("Updating Exam Date... ");
         System.out.print("Course Code: ");
         courseCode = sc.nextLine();
-        System.out.print("New Exam Date: ");
-        examDate = sc.nextLine();
+        System.out.println("New Exam Date: ");
+        System.out.print("Year: ");
+        examDateYear = Integer.parseInt(sc.nextLine());
+        System.out.print("Month: ");
+        examDateMonth = Integer.parseInt(sc.nextLine());
+        System.out.print("Day: ");
+        examDateDay = Integer.parseInt(sc.nextLine());
+        System.out.print("Hour: ");
+        examDateHour = Integer.parseInt(sc.nextLine());
+        System.out.print("Minute ");
+        examDateMinute = Integer.parseInt(sc.nextLine());
+        examDate.set(examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute);
         AdminMgr.updateExamDate(courseCode, examDate);
         System.out.format("Course %s/'s Exam Date Changed to %s", courseCode, examDate);
     }
@@ -312,7 +389,7 @@ public class AdminUI extends CourseUI{
         courseCode = sc.nextLine();
         System.out.print("Index To Be Deleted: ");
         indexNum = sc.nextLine();
-        AdminMgr.deletedIndex(courseCode, indexNum);
+        AdminMgr.deleteIndex(courseCode, indexNum);
         System.out.format("Index %s Deleted", indexNum);
     }
 
@@ -332,4 +409,5 @@ public class AdminUI extends CourseUI{
     }
 
 }
+
 
