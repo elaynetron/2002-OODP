@@ -1,10 +1,12 @@
-package boundary;
+package boundary
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Scanner;
-import java.util.Calendar
+import java.util.Calendar;
+
 import control.AdminMgr;
+import control.CourseMgr;
 import entity.Admin;
 
 public class AdminUI extends CourseUI{
@@ -19,7 +21,7 @@ public class AdminUI extends CourseUI{
     public void displayAdminUI() throws ParseException, IOException{
         int choice = 0;
 
-        AdminMgr adminMgr = new AdminMgr();
+
         System.out.format("Welcome, Admin %s", admin.getUsername());
         do {
             System.out.println("Please select:\n"
@@ -74,47 +76,152 @@ public class AdminUI extends CourseUI{
 
     private void editStudentAccessPeriodUI(){
         String matricNum;
-        int startYear, startMonth, startDay, startHour, startMinute;
-        Calendar startTime = Calendar.getInstance();
-        int endYear, endMonth, endDay, endHour, endMinute;
-        Calendar endTime = Calendar.getInstance();
+        int startYear = 0, startMonth = 0, startDay = 0, startHour = 0, startMinute = 0;
+        Calendar startDate = Calendar.getInstance();
+        int endYear = 0, endMonth = 0, endDay = 0, endHour = 0, endMinute = 0;
+        Calendar endDate = Calendar.getInstance();
         System.out.println("Editing Student Access Period... ");
-        System.out.print("Student Matric Number: ");
-        matricNum = sc.nextLine();
+        boolean validMatric;
+        do {
+            System.out.print("Student Matric Number: ");
+            matricNum = sc.nextLine();
+            validMatric = AdminMgr.validateMatric(matricNum);
+            if (!validMatric) System.out.println("Student does not exist, please try again. ");
+        } while (!validMatric);
         System.out.print("Access Period Start: ");
-        System.out.print("Year: ");
-        startYear = Integer.parseInt(sc.nextLine());
-        System.out.print("Month: ");
-        startMonth = Integer.parseInt(sc.nextLine());
-        System.out.print("Day: ");
-        startDay = Integer.parseInt(sc.nextLine());
-        System.out.print("Hour: ");
-        startHour = Integer.parseInt(sc.nextLine());
-        System.out.print("Minute ");
-        startMinute = Integer.parseInt(sc.nextLine());
-        startTime.set(startYear, startMonth, startDay, startHour, startMinute);
+        boolean validStartYear;
+        do {
+            System.out.print("Year: ");
+            try{
+                startYear = Integer.parseInt(sc.nextLine());
+                validStartYear = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartYear = false;
+            }
+        } while (!validStartYear);
+        boolean validStartMonth;
+        do {
+            System.out.print("Month: ");
+            try{
+                startMonth = Integer.parseInt(sc.nextLine());
+                validStartMonth = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartMonth = false;
+            }
+        } while (!validStartMonth);
+        boolean validStartDay;
+        do {
+            System.out.print("Day: ");
+            try{
+                startDay = Integer.parseInt(sc.nextLine());
+                validStartDay = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartDay = false;
+            }
+        } while (!validStartDay);
+        boolean validStartHour;
+        do {
+            System.out.print("Hour: ");
+            try{
+                startHour = Integer.parseInt(sc.nextLine());
+                validStartHour = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartHour = false;
+            }
+        } while (!validStartHour);
+        boolean validStartMinute;
+        do {
+            System.out.print("Minute: ");
+            try{
+                startMinute = Integer.parseInt(sc.nextLine());
+                validStartMinute = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartMinute = false;
+            }
+        } while (!validStartMinute);
+        startDate.set(startYear, startMonth, startDay, startHour, startMinute);
 
         System.out.print("Access Period End: ");
-        System.out.print("Year: ");
-        endYear = Integer.parseInt(sc.nextLine());
-        System.out.print("Month: ");
-        endMonth = Integer.parseInt(sc.nextLine());
-        System.out.print("Day: ");
-        endDay = Integer.parseInt(sc.nextLine());
-        System.out.print("Hour: ");
-        endHour = Integer.parseInt(sc.nextLine());
-        System.out.print("Minute ");
-        endMinute = Integer.parseInt(sc.nextLine());
-        endTime.set(endYear, endMonth, endDay, endHour, endMinute);
-        AdminMgr.editStudentAccessPeriod(matricNum, startTime,endTime);
-        System.out.format("New Period: %s to %s", startTime, endTime );
+        boolean validEndYear;
+        do {
+            System.out.print("Year: ");
+            try{
+                endYear = Integer.parseInt(sc.nextLine());
+                validEndYear = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndYear = false;
+            }
+        } while (!validEndYear);
+        boolean validEndMonth;
+        do {
+            System.out.print("Month: ");
+            try{
+                endMonth = Integer.parseInt(sc.nextLine());
+                validEndMonth = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndMonth = false;
+            }
+        } while (!validEndMonth);
+        boolean validEndDay;
+        do {
+            System.out.print("Day: ");
+            try{
+                endDay = Integer.parseInt(sc.nextLine());
+                validEndDay = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndDay = false;
+            }
+        } while (!validEndDay);
+        boolean validEndHour;
+        do {
+            System.out.print("Hour: ");
+            try{
+                endHour = Integer.parseInt(sc.nextLine());
+                validEndHour = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndHour = false;
+            }
+        } while (!validEndHour);
+        boolean validEndMinute;
+        do {
+            System.out.print("Minute: ");
+            try{
+                endMinute = Integer.parseInt(sc.nextLine());
+                validEndMinute = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndMinute = false;
+            }
+        } while (!validEndMinute);
+        endDate.set(endYear, endMonth, endDay, endHour, endMinute);
+        AdminMgr.editStudentAccessPeriod(matricNum, startDate, endDate);
+        System.out.format("New Period: %s to %s", startDate, endDate );
     }
 
     private void addStudentUI(){
         String username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email;
-        int startYear, startMonth, startDay, startHour, startMinute;
+        int startYear = 0, startMonth = 0, startDay = 0, startHour = 0, startMinute = 0;
         Calendar startDate = Calendar.getInstance();
-        int endYear, endMonth, endDay, endHour, endMinute;
+        int endYear = 0, endMonth = 0, endDay = 0, endHour = 0, endMinute = 0;
         Calendar endDate = Calendar.getInstance();
         System.out.println("Adding New Student... ");
         System.out.print("Student Username: ");
@@ -125,8 +232,13 @@ public class AdminUI extends CourseUI{
         firstName = sc.nextLine();
         System.out.print("Last Name: ");
         lastName = sc.nextLine();
-        System.out.print("Matric Number: ");
-        matricNum = sc.nextLine();
+        boolean existMatric;
+        do {
+            System.out.print("Matric Number: ");
+            matricNum = sc.nextLine();
+            existMatric = AdminMgr.validateMatric(matricNum);
+            if (existMatric) System.out.println("Matric Number already exists, please try again. ");
+        } while (existMatric);
         System.out.print("Gender: ");
         gender = sc.nextLine();
         System.out.print("Nationality: ");
@@ -137,29 +249,129 @@ public class AdminUI extends CourseUI{
         email = sc.nextLine();
 
         System.out.print("Access Period Start: ");
-        System.out.print("Year: ");
-        startYear = Integer.parseInt(sc.nextLine());
-        System.out.print("Month: ");
-        startMonth = Integer.parseInt(sc.nextLine());
-        System.out.print("Day: ");
-        startDay = Integer.parseInt(sc.nextLine());
-        System.out.print("Hour: ");
-        startHour = Integer.parseInt(sc.nextLine());
-        System.out.print("Minute ");
-        startMinute = Integer.parseInt(sc.nextLine());
+        boolean validStartYear;
+        do {
+            System.out.print("Year: ");
+            try{
+                startYear = Integer.parseInt(sc.nextLine());
+                validStartYear = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartYear = false;
+            }
+        } while (!validStartYear);
+        boolean validStartMonth;
+        do {
+            System.out.print("Month: ");
+            try{
+                startMonth = Integer.parseInt(sc.nextLine());
+                validStartMonth = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartMonth = false;
+            }
+        } while (!validStartMonth);
+        boolean validStartDay;
+        do {
+            System.out.print("Day: ");
+            try{
+                startDay = Integer.parseInt(sc.nextLine());
+                validStartDay = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartDay = false;
+            }
+        } while (!validStartDay);
+        boolean validStartHour;
+        do {
+            System.out.print("Hour: ");
+            try{
+                startHour = Integer.parseInt(sc.nextLine());
+                validStartHour = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartHour = false;
+            }
+        } while (!validStartHour);
+        boolean validStartMinute;
+        do {
+            System.out.print("Minute: ");
+            try{
+                startMinute = Integer.parseInt(sc.nextLine());
+                validStartMinute = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validStartMinute = false;
+            }
+        } while (!validStartMinute);
         startDate.set(startYear, startMonth, startDay, startHour, startMinute);
 
         System.out.print("Access Period End: ");
-        System.out.print("Year: ");
-        endYear = Integer.parseInt(sc.nextLine());
-        System.out.print("Month: ");
-        endMonth = Integer.parseInt(sc.nextLine());
-        System.out.print("Day: ");
-        endDay = Integer.parseInt(sc.nextLine());
-        System.out.print("Hour: ");
-        endHour = Integer.parseInt(sc.nextLine());
-        System.out.print("Minute ");
-        endMinute = Integer.parseInt(sc.nextLine());
+        boolean validEndYear;
+        do {
+            System.out.print("Year: ");
+            try{
+                endYear = Integer.parseInt(sc.nextLine());
+                validEndYear = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndYear = false;
+            }
+        } while (!validEndYear);
+        boolean validEndMonth;
+        do {
+            System.out.print("Month: ");
+            try{
+                endMonth = Integer.parseInt(sc.nextLine());
+                validEndMonth = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndMonth = false;
+            }
+        } while (!validEndMonth);
+        boolean validEndDay;
+        do {
+            System.out.print("Day: ");
+            try{
+                endDay = Integer.parseInt(sc.nextLine());
+                validEndDay = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndDay = false;
+            }
+        } while (!validEndDay);
+        boolean validEndHour;
+        do {
+            System.out.print("Hour: ");
+            try{
+                endHour = Integer.parseInt(sc.nextLine());
+                validEndHour = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndHour = false;
+            }
+        } while (!validEndHour);
+        boolean validEndMinute;
+        do {
+            System.out.print("Minute: ");
+            try{
+                endMinute = Integer.parseInt(sc.nextLine());
+                validEndMinute = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validEndMinute = false;
+            }
+        } while (!validEndMinute);
         endDate.set(endYear, endMonth, endDay, endHour, endMinute);
 
         AdminMgr.addStudent(username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email, startDate, endDate);
@@ -168,8 +380,13 @@ public class AdminUI extends CourseUI{
     private void deleteStudentUI(){
         String matricNum;
         System.out.println("Deleting Student... ");
-        System.out.print("Matric number of student to be deleted: ");
-        matricNum = sc.nextLine();
+        boolean validMatric;
+        do {
+            System.out.print("Student Matric Number: ");
+            matricNum = sc.nextLine();
+            validMatric = AdminMgr.validateMatric(matricNum);
+            if (!validMatric) System.out.println("Student does not exist, please try again. ");
+        } while (!validMatric);
         AdminMgr.deleteStudent(matricNum);
         System.out.format("Student %s Deleted", matricNum);
 
@@ -178,49 +395,140 @@ public class AdminUI extends CourseUI{
     private void printStudentListByCourseUI(){
         String courseCode;
         System.out.println("Printing Student List By Course... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
         AdminMgr.printStudentListByCourse(courseCode);
     }
 
     private void printStudentListByIndexUI(){
-        String courseCode, indexNum;
+        String courseCode;
+        int indexNum=0;
         System.out.println("Printing Student List By Index... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
-        System.out.print("Index Number: ");
-        indexNum = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
+        boolean exception;
+        boolean validIndexNum = false;
+        do {
+            System.out.print("Index: ");
+            try{
+                indexNum = Integer.parseInt(sc.nextLine());
+                exception = false;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                exception = true;
+            }
+            if (!exception) { // input is valid (integer)
+                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
+            }
+        } while (!validIndexNum);
         AdminMgr.printStudentListByIndex(courseCode, indexNum);
     }
 
     private void addCourseUI(){
         String courseCode, courseName, school, courseType;
-        int AU;
-        int examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute;
+        int AU = 0;
+        int examDateYear = 0, examDateMonth = 0, examDateDay = 0, examDateHour = 0, examDateMinute = 0;
         Calendar examDate = Calendar.getInstance();
         System.out.println("Adding New Course... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
+        boolean existCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            existCourse = CourseMgr.validateCourse(courseCode);
+            if (existCourse) System.out.println("Course code already exists, please try again. ");
+        } while (existCourse);
         System.out.print("Course Name: ");
         courseName = sc.nextLine();
-        System.out.print("AUs: ");
-        AU = Integer.parseInt(sc.nextLine());
+        boolean validAU;
+        do {
+            System.out.print("AU: ");
+            try{
+                AU = Integer.parseInt(sc.nextLine());
+                validAU = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validAU = false;
+            }
+        } while (!validAU);
         System.out.print("School: ");
         school = sc.nextLine();
         System.out.print("Course Type: ");
         courseType = sc.nextLine();
 
         System.out.println("Exam Date");
-        System.out.print("Year: ");
-        examDateYear = Integer.parseInt(sc.nextLine());
-        System.out.print("Month: ");
-        examDateMonth = Integer.parseInt(sc.nextLine());
-        System.out.print("Day: ");
-        examDateDay = Integer.parseInt(sc.nextLine());
-        System.out.print("Hour: ");
-        examDateHour = Integer.parseInt(sc.nextLine());
-        System.out.print("Minute ");
-        examDateMinute = Integer.parseInt(sc.nextLine());
+        boolean validYear;
+        do {
+            System.out.print("Year: ");
+            try{
+                examDateYear = Integer.parseInt(sc.nextLine());
+                validYear = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validYear = false;
+            }
+        } while (!validYear);
+        boolean validMonth;
+        do {
+            System.out.print("Month: ");
+            try{
+                examDateMonth = Integer.parseInt(sc.nextLine());
+                validMonth = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validMonth = false;
+            }
+        } while (!validMonth);
+        boolean validDay;
+        do {
+            System.out.print("Day: ");
+            try{
+                examDateDay = Integer.parseInt(sc.nextLine());
+                validDay = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validDay = false;
+            }
+        } while (!validDay);
+        boolean validHour;
+        do {
+            System.out.print("Hour: ");
+            try{
+                examDateHour = Integer.parseInt(sc.nextLine());
+                validHour = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validHour = false;
+            }
+        } while (!validHour);
+        boolean validMinute;
+        do {
+            System.out.print("Minute: ");
+            try{
+                examDateMinute = Integer.parseInt(sc.nextLine());
+                validMinute = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validMinute = false;
+            }
+        } while (!validMinute);
         examDate.set(examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute);
 
         AdminMgr.addCourse(courseCode, courseName, AU, school, courseType, examDate);
@@ -230,7 +538,7 @@ public class AdminUI extends CourseUI{
     private void updateCourseUI(){
         int choice = 0;
         System.out.println("Updating Course... ");
-        AdminMgr AdminMgr = new AdminMgr();
+
 
         do {
             System.out.println("Please select:\n"
@@ -295,10 +603,20 @@ public class AdminUI extends CourseUI{
     private void updateCourseCodeUI(){
         String oldCourseCode, newCourseCode;
         System.out.println("Updating Course Code...");
-        System.out.print("Old Course Code: ");
-        oldCourseCode = sc.nextLine();
-        System.out.print("New Course Code: ");
-        newCourseCode = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Old Course code: ");
+            oldCourseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(oldCourseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
+        boolean existCourse;
+        do {
+            System.out.print("New Course code: ");
+            newCourseCode = sc.nextLine();
+            existCourse = CourseMgr.validateCourse(newCourseCode);
+            if (existCourse) System.out.println("Course code already exists, please try again. ");
+        } while (existCourse);
         AdminMgr.updateCourseCode(oldCourseCode, newCourseCode);
         System.out.format("Course Code %s Updated to %s", oldCourseCode, newCourseCode);
     }
@@ -306,8 +624,13 @@ public class AdminUI extends CourseUI{
     private void updateCourseNameUI(){
         String courseCode, courseName;
         System.out.println("Updating Course Name... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
         System.out.print("New Course Name: ");
         courseName = sc.nextLine();
         AdminMgr.updateCourseName(courseCode, courseName);
@@ -316,12 +639,27 @@ public class AdminUI extends CourseUI{
 
     private void updateAUUI(){
         String courseCode;
-        int AU;
+        int AU=0;
         System.out.println("Updating Course AU... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
-        System.out.print("New AU: ");
-        AU = Integer.parseInt(sc.nextLine());
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
+        boolean validAU;
+        do {
+            System.out.print("New AU: ");
+            try{
+                AU = Integer.parseInt(sc.nextLine());
+                validAU = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validAU = false;
+            }
+        } while (!validAU);
         AdminMgr.updateAU(courseCode, AU);
         System.out.format("Course %s/'s AU Changed to %d", courseCode, AU);
     }
@@ -329,8 +667,13 @@ public class AdminUI extends CourseUI{
     private void updateSchoolUI(){
         String courseCode, school;
         System.out.println("Updating School... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
         System.out.print("New School: ");
         school = sc.nextLine();
         AdminMgr.updateSchool(courseCode, school);
@@ -340,8 +683,13 @@ public class AdminUI extends CourseUI{
     private void updateCourseTypeUI(){
         String courseCode, courseType;
         System.out.println("Updating Course Type... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.println("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
         System.out.print("New Course Type: ");
         courseType = sc.nextLine();
         AdminMgr.updateCourseType(courseCode, courseType);
@@ -350,64 +698,197 @@ public class AdminUI extends CourseUI{
 
     private void updateExamDateUI(){
         String courseCode;
-        int examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute;
+        int examDateYear = 0, examDateMonth = 0, examDateDay = 0, examDateHour = 0, examDateMinute = 0;
         Calendar examDate = Calendar.getInstance();
         System.out.println("Updating Exam Date... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
         System.out.println("New Exam Date: ");
-        System.out.print("Year: ");
-        examDateYear = Integer.parseInt(sc.nextLine());
-        System.out.print("Month: ");
-        examDateMonth = Integer.parseInt(sc.nextLine());
-        System.out.print("Day: ");
-        examDateDay = Integer.parseInt(sc.nextLine());
-        System.out.print("Hour: ");
-        examDateHour = Integer.parseInt(sc.nextLine());
-        System.out.print("Minute ");
-        examDateMinute = Integer.parseInt(sc.nextLine());
+        boolean validYear;
+        do {
+            System.out.print("Year: ");
+            try{
+                examDateYear = Integer.parseInt(sc.nextLine());
+                validYear = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validYear = false;
+            }
+        } while (!validYear);
+        boolean validMonth;
+        do {
+            System.out.print("Month: ");
+            try{
+                examDateMonth = Integer.parseInt(sc.nextLine());
+                validMonth = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validMonth = false;
+            }
+        } while (!validMonth);
+        boolean validDay;
+        do {
+            System.out.print("Day: ");
+            try{
+                examDateDay = Integer.parseInt(sc.nextLine());
+                validDay = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validDay = false;
+            }
+        } while (!validDay);
+        boolean validHour;
+        do {
+            System.out.print("Hour: ");
+            try{
+                examDateHour = Integer.parseInt(sc.nextLine());
+                validHour = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validHour = false;
+            }
+        } while (!validHour);
+        boolean validMinute;
+        do {
+            System.out.print("Minute: ");
+            try{
+                examDateMinute = Integer.parseInt(sc.nextLine());
+                validMinute = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validMinute = false;
+            }
+        } while (!validMinute);
+
         examDate.set(examDateYear, examDateMonth, examDateDay, examDateHour, examDateMinute);
         AdminMgr.updateExamDate(courseCode, examDate);
         System.out.format("Course %s/'s Exam Date Changed to %s", courseCode, examDate);
     }
 
     private void addIndexUI(){
-        String courseCode, indexNum;
+        String courseCode;
+        int indexNum=0;
         System.out.println("Adding Index... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
-        System.out.print("New Index: ");
-        indexNum = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
+        boolean exception;
+        boolean validIndexNum = false;
+        do {
+            System.out.print("Index: ");
+            try{
+                indexNum = Integer.parseInt(sc.nextLine());
+                exception = false;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                exception = true;
+            }
+            if (!exception) { // input is valid (integer)
+                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
+            }
+        } while (!validIndexNum);
+
         AdminMgr.addIndex(courseCode, indexNum);
-        System.out.format("Added Index %s to Course %s", indexNum, courseCode);
+        System.out.format("Added Index %d to Course %s", indexNum, courseCode);
     }
 
     private void deleteIndexUI(){
-        String courseCode, indexNum;
+        String courseCode;
+        int indexNum=0;
         System.out.println("Deleting Index... ");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
-        System.out.print("Index To Be Deleted: ");
-        indexNum = sc.nextLine();
+        boolean validCourse;
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
+        boolean exception;
+        boolean validIndexNum = false;
+        do {
+            System.out.print("Index: ");
+            try{
+                indexNum = Integer.parseInt(sc.nextLine());
+                exception = false;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                exception = true;
+            }
+            if (!exception) { // input is valid (integer)
+                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
+            }
+        } while (!validIndexNum);
+
         AdminMgr.deleteIndex(courseCode, indexNum);
-        System.out.format("Index %s Deleted", indexNum);
+        System.out.format("Index %d Deleted", indexNum);
     }
 
     private void updateVacancyUI() {
-        String courseCode, indexNum;
-        int newVacancy;
+        String courseCode;
+        int indexNum=0;
+        int newVacancy=0;
+        boolean validCourse;
         System.out.println("Updating Vacancy...");
-        System.out.print("Course Code: ");
-        courseCode = sc.nextLine();
-        System.out.print("Index: ");
-        indexNum = sc.nextLine();
-        System.out.println("New Vacancy: ");
-        newVacancy = Integer.parseInt(sc.nextLine());
+        do {
+            System.out.print("Course code: ");
+            courseCode = sc.nextLine();
+            validCourse = CourseMgr.validateCourse(courseCode);
+            if (!validCourse) System.out.println("Course does not exist, please try again. ");
+        } while (!validCourse);
+        boolean exception;
+        boolean validIndexNum = false;
+        do {
+            System.out.print("Index: ");
+            try{
+                indexNum = Integer.parseInt(sc.nextLine());
+                exception = false;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                exception = true;
+            }
+            if (!exception) { // input is valid (integer)
+                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
+            }
+        } while (!validIndexNum);
+        boolean validVacancy;
+        do {
+            System.out.print("New Vacancy: ");
+            try{
+                newVacancy = Integer.parseInt(sc.nextLine());
+                validVacancy = true;
+            }
+            catch (Exception e) {
+                System.out.println("Invalid, please try again. ");
+                validVacancy = false;
+            }
+        } while (!validVacancy);
+
         AdminMgr.updateVacancy(courseCode, indexNum, newVacancy);
-        System.out.format("Vacancy of Index %s Is Updated to %d", indexNum, newVacancy);
+        System.out.format("Vacancy of Index %d Is Updated to %d", indexNum, newVacancy);
 
     }
 
-}
 
+
+}
 
