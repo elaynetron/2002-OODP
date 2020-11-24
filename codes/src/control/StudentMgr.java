@@ -1,9 +1,14 @@
 package control;
-import entity.*;
 
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 import boundary.StudentUI;
+import entity.Course;
+import entity.Index;
+import entity.Lesson;
+import entity.RegisteredCourse;
+import entity.Student;
 
 public class StudentMgr extends CourseMgr {
 
@@ -14,7 +19,6 @@ public class StudentMgr extends CourseMgr {
 	 * @param student
 	 */
 	public StudentMgr(Student student) {
-		// TODO - implement StudentMgr.StudentMgr
 		this.student = student;
 	}
 
@@ -22,60 +26,100 @@ public class StudentMgr extends CourseMgr {
 	 * 
 	 * @param courseCode
 	 * @param indexNum
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws EOFException
 	 */
-	public void addCourse(String courseCode, int indexNum) {
-		// TODO - implement StudentMgr.addCourse
-		int vacancy = super.checkVacancies(courseCode,indexNum);
-		if (vacancy > 0 ) { // and checkclash???
-			Course c = ;//method to get course from coursecode?
-			Index i = ;//method to get index from indexnum int
-			RegisteredCourse toRegister = new RegisteredCourse(this.student,c,i,"Registered");
-//			ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
-//			toUpdate.add(toRegister);
-			student.addToCoursesRegistered(toRegister);
-			System.out.println("Course successfully registered.");
-		}
-		else
-			System.out.println("Failed to registered for course. Please try again.");
-			
+	public void addCourse(String courseCode, int indexNum) throws EOFException, ClassNotFoundException, IOException {
+		int vacancy = super.checkVacancies(courseCode, indexNum);
+		if (checkClash(courseCode, indexNum)) {
+			if (checkAUExceed(courseCode, indexNum)) {
+				Course course = getCourse(courseCode);
+				Index index = getIndex(courseCode, indexNum);
+
+				if (vacancy > 0) {
+					RegisteredCourse toRegister = new RegisteredCourse(this.student, course, index, "Registered");
+					student.addToCoursesRegistered(toRegister);
+					System.out.println("Course successfully registered.");
+					NotificationMgr.sendEmail(this.student, courseCode);
+				} else {
+					RegisteredCourse toRegister = new RegisteredCourse(this.student, course, index, "Waitlist");
+					student.addToCoursesRegistered(toRegister);
+					updateWaitList(course, index);
+					System.out.println("Course added to waitlist.");
+				}
+			} else
+				System.out.println("Failed to register for course - Reached maximum number of AUs.");
+		} else
+			System.out.println("Failed to register for course - Course clashes with other registered courses.");
+		DataMgr.updateStudentList(student);
 	}
 
 	/**
 	 * 
 	 * @param courseCode
 	 * @param indexNum
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
-	private void updateWaitList(String courseCode, int indexNum) {
-		// TODO - implement StudentMgr.updateWaitList
-		throw new UnsupportedOperationException();
+	private void updateWaitList(Course course, Index index) throws ClassNotFoundException, IOException {
+		ArrayList<Student> waitList = index.getWaitList();
+		waitList.add(this.student);
+		DataMgr.updateCourseList(course);
 	}
 
 	/**
 	 * 
 	 * @param courseCode
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws EOFException
 	 */
-	public void dropCourse(String courseCode) {
-		// TODO - implement StudentMgr.dropCourse
-		ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
-		Course c = ;//method to get course from coursecode
-		if (toUpdate.contains(c)) {
-			int index = toUpdate.indexOf(c);
-			student.removeFromCoursesRegistered(c, index);
-			System.out.println("Course dropped successfully.");
+	public void dropCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException {
+		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
+		Course course = getCourse(courseCode);
+		Index index = null;
+		for (RegisteredCourse registeredCourse : registeredList) {
+			if (registeredCourse.getCourse().equals(course)) {
+				registeredList.remove(registeredCourse);
+				index = registeredCourse.getIndex();
+				System.out.println("Course dropped successfully.");
+				return;
+			}
 		}
-		else
-			System.out.println("You are not registered for the course!");
-			
+		System.out.println("You are not registered for the course!");
+		DataMgr.updateStudentList(this.student);
+
+		ArrayList<Student> waitList = index.getWaitList();
+		index.setVacancy(index.getVacancy() + 1);
+		Student studentToInform = waitList.get(0);
+		waitList.remove(studentToInform);
+		ArrayList<RegisteredCourse> studentToInformRegisteredList = studentToInform.getCoursesRegistered();
+		for (RegisteredCourse registeredCourse : studentToInformRegisteredList) {
+			if (registeredCourse.getCourse().equals(course)) {
+				registeredCourse.setStatus("Registered");
+				System.out.println("Student " + studentToInform.getUsername() + " has been informed.");
+			}
+		}
+		NotificationMgr.sendEmail(studentToInform, courseCode);
+		DataMgr.updateCourseList(course);
+		DataMgr.updateStudentList(studentToInform);
 	}
 
 	public void checkCoursesRegistered() {
-		// TODO - implement StudentMgr.checkCoursesRegistered
-		ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
-		for(int i = 0; i < toUpdate.size(); i++) {
-			RegisteredCourse c = toUpdate.get(i);
-			Index index = c.getIndex();
-			Course CourseToPrint = c.getCourse();
-			System.out.println(CourseToPrint.getCourseCode(),CourseToPrint.getCourseName(),index.getIndexNum(),index.getTutorialGrp()); // ??? Implement printing details from coursemgr?? LessonLIst?
+		System.out.println("Student " + this.student.getUsername() + "'s Registered Courses");
+		Course course;
+		Index index;
+		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
+		for (RegisteredCourse registeredCourse : registeredList) {
+			course = registeredCourse.getCourse();
+			System.out.println(course.getCourseCode() + " " + course.getCourseName());
+			System.out.println("AU: " + course.getAU() + " | School: " + course.getSchool() + " |  Type: "
+					+ course.getCourseType());
+			System.out.println("Exam Date: " + course.getExamDate().toString());
+
+			index = registeredCourse.getIndex();
+			System.out.println("Index Number: " + index.getIndexNum());
 		}
 	}
 
@@ -83,18 +127,23 @@ public class StudentMgr extends CourseMgr {
 	 * 
 	 * @param courseCode
 	 * @param indexNum
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws EOFException
 	 */
-	public void changeIndexNum(String courseCode, int indexNum) {
-		// TODO - implement StudentMgr.changeIndexNum
-		ArrayList<RegisteredCourse> toUpdate = student.getCoursesRegistered();
-		Course c = ;//method to get course from coursecode
-		if (toUpdate.contains(c)) {
-			dropCourse(courseCode);
-			addCourse(courseCode,indexNum);
-			System.out.println("Index number changed succesfully.");
+	public void changeIndexNum(String courseCode, int indexNum)
+			throws EOFException, ClassNotFoundException, IOException {
+		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
+		Course course = getCourse(courseCode); // method to get course from coursecode
+		for (RegisteredCourse registeredCourse : registeredList) {
+			if (registeredCourse.getCourse().equals(course)) {
+				dropCourse(courseCode);
+				addCourse(courseCode, indexNum);
+				System.out.println("Index number changed succesfully.");
+				break;
+			}
 		}
-		else
-			System.out.println("Invalid request.");
+	}
 
 	/**
 	 * 
@@ -102,80 +151,109 @@ public class StudentMgr extends CourseMgr {
 	 * @param courseCode
 	 * @param selfIndexNum
 	 * @param peerIndexNum
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws EOFException
 	 */
-	public void swapIndexNum(Student peer, String courseCode, int selfIndexNum, int peerIndexNum) {
-		// TODO - implement StudentMgr.swopIndexNum
-		Student self = this.student;
-		Course toSwap = ;// course from coursecode
-		ArrayList<RegisteredCourse> selfCourses = self.getCoursesRegistered();
+	public void swapIndexNum(Student peer, String courseCode, int selfIndexNum, int peerIndexNum)
+			throws EOFException, ClassNotFoundException, IOException {
+		Course toSwap = getCourse(courseCode);
+		ArrayList<RegisteredCourse> selfCourses = this.student.getCoursesRegistered();
 		ArrayList<RegisteredCourse> peerCourses = peer.getCoursesRegistered();
-		if (selfCourses.contains(toSwap) && peerCourses.contains(toSwap)) {
-			self.dropCourse(courseCode);
-			peer.dropCourse(courseCode);
-			self.addCourse(courseCode,peerIndexNum);
-			peer.addCourse(courseCode,selfIndexNum);
-			System.out.println("Index number successfully swapped.");
+		StudentMgr peerMgr = new StudentMgr(peer);
+		for (RegisteredCourse selfRegCourse : selfCourses) {
+			for (RegisteredCourse peerRegCourse : peerCourses) {
+				if (selfRegCourse.getCourse().equals(toSwap) && peerRegCourse.getCourse().equals(toSwap)) {
+					dropCourse(courseCode);
+					peerMgr.dropCourse(courseCode);
+					addCourse(courseCode, peerIndexNum);
+					peerMgr.addCourse(courseCode, selfIndexNum);
+					System.out.println("Index number successfully swapped.");
+				}
+			}
 		}
-		else 
-			System.out.println("Invalid request.");
+		DataMgr.updateStudentList(this.student);
+		DataMgr.updateStudentList(peer);
 	}
 
 	/**
 	 * 
 	 * @param courseCode
 	 * @param indexNum
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws EOFException
 	 */
-	private Boolean checkClash(String courseCode, int indexNum) {
-		// TODO - implement StudentMgr.checkClash
-		throw new UnsupportedOperationException();
+	private boolean checkClash(String courseCode, int indexNum)
+			throws EOFException, ClassNotFoundException, IOException {
+		Course course = getCourse(courseCode);
+		ArrayList<Lesson> lessonList = null;
+		for (Index index : course.getIndexList()) {
+			if (index.getIndexNum() == indexNum) {
+				lessonList = index.getLessonList();
+			}
+		}
+		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
+		ArrayList<Lesson> lessonListRegistered;
+		for (RegisteredCourse registeredCourse : registeredList) {
+			lessonListRegistered = registeredCourse.getIndex().getLessonList();
+			for (Lesson lessonRegistered : lessonListRegistered) {
+				for (Lesson lesson : lessonList) {
+					if (lesson.getLessonStart().compareTo(lessonRegistered.getLessonEnd()) < 0)
+						return false;
+					if (lesson.getLessonEnd().compareTo(lessonRegistered.getLessonStart()) > 0)
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private boolean checkAUExceed(String courseCode, int indexNum)
+			throws EOFException, ClassNotFoundException, IOException {
+		Course course = getCourse(courseCode);
+		int totalAU = course.getAU();
+		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
+		for (RegisteredCourse registeredCourse : registeredList) {
+			totalAU += registeredCourse.getCourse().getAU();
+		}
+		return (totalAU > 21); // can change number to fit maximum number of AUs
 	}
 
 	/**
 	 * 
 	 * @param notification
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
-	public void chooseNotification(int notificationChoice) {//not used?? since commands are in notificationMgr according to diagram
-		// TODO - implement StudentMgr.chooseNotification
-		
-		
+	public void chooseNotification(int notificationChoice) throws ClassNotFoundException, IOException {
+		this.student.setNotification(notificationChoice);
+		DataMgr.updateStudentList(this.student);
 	}
-	
-	public void checkVacancies(String courseCode, int indexNum) {
+
+	public int checkVacancies(String courseCode, int indexNum)
+			throws EOFException, ClassNotFoundException, IOException {
 		System.out.println("Course code: " + courseCode);
 		System.out.println("Index number: " + indexNum);
-		System.out.println("Number of vacancies: " + super.checkVacancies(courseCode,indexNum));
+		System.out.println("Number of vacancies: " + super.checkVacancies(courseCode, indexNum));
+		return 0;
 	}
-	
-	public boolean isExistingStudent(String userName) {
-		ArrayList<Student> studentList = readStudentList(); // studentmgr extend coursemgr which uses datamgr shud be can use?
-		for (int i = 0; i<studentList.size(); i++) {
-			Student s = studentList.get(i);
-			if (s.getUsername() == userName)
+
+	public boolean isExistingStudent(String userName) throws EOFException, ClassNotFoundException, IOException {
+		ArrayList<Student> studentList = DataMgr.readStudentList();
+		for (Student student : studentList) {
+			if (student.getUsername().compareTo(userName) == 0)
 				return true;
 		}
 		return false;
 	}
-	
-	
-	public student getStudent(String userName) {
-		ArrayList<Student> studentList = readStudentList();
-		for (int i = 0; i<studentList.size(); i++) {
-			Student s = studentList.get(i);
-			if (s.getUsername() == userName)
-				return s;
-		}
-			
-	}
-	public void sendEmail() {
-		System.out.println("Email sent.");
-	}
-	
-	public void sendSMS() {
-		System.out.println("SMS sent.");
-	}
-	
-	public void sendWhatsapp() {
-		System.out.println("Whatsapp sent.");
-	}
 
+	public Student getStudent(String userName) throws EOFException, ClassNotFoundException, IOException {
+		ArrayList<Student> studentList = DataMgr.readStudentList();
+		for (Student student : studentList) {
+			if (student.getUsername().compareTo(userName) == 0)
+				return student;
+		}
+		return null;
+	}
 }
