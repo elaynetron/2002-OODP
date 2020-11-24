@@ -120,7 +120,9 @@ public class StudentMgr extends CourseMgr {
 
 			index = registeredCourse.getIndex();
 			System.out.println("Index Number: " + index.getIndexNum());
+			System.out.println();
 		}
+		System.out.println();
 	}
 
 	/**
@@ -135,14 +137,17 @@ public class StudentMgr extends CourseMgr {
 			throws EOFException, ClassNotFoundException, IOException {
 		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
 		Course course = getCourse(courseCode); // method to get course from coursecode
+		boolean success = false;
 		for (RegisteredCourse registeredCourse : registeredList) {
 			if (registeredCourse.getCourse().equals(course)) {
 				dropCourse(courseCode);
 				addCourse(courseCode, indexNum);
 				System.out.println("Index number changed succesfully.");
+				success = true;
 				break;
 			}
 		}
+		if (!success) System.out.println("You are not registered for this course, please try again.\n");
 	}
 
 	/**
@@ -161,6 +166,7 @@ public class StudentMgr extends CourseMgr {
 		ArrayList<RegisteredCourse> selfCourses = this.student.getCoursesRegistered();
 		ArrayList<RegisteredCourse> peerCourses = peer.getCoursesRegistered();
 		StudentMgr peerMgr = new StudentMgr(peer);
+		boolean success = false;
 		for (RegisteredCourse selfRegCourse : selfCourses) {
 			for (RegisteredCourse peerRegCourse : peerCourses) {
 				if (selfRegCourse.getCourse().equals(toSwap) && peerRegCourse.getCourse().equals(toSwap)) {
@@ -169,9 +175,12 @@ public class StudentMgr extends CourseMgr {
 					addCourse(courseCode, peerIndexNum);
 					peerMgr.addCourse(courseCode, selfIndexNum);
 					System.out.println("Index number successfully swapped.");
+					success = true;
+					break;
 				}
 			}
 		}
+		if (!success) System.out.println("Swap not successful.\n");
 		DataMgr.updateStudentList(this.student);
 		DataMgr.updateStudentList(peer);
 	}
@@ -217,7 +226,7 @@ public class StudentMgr extends CourseMgr {
 		for (RegisteredCourse registeredCourse : registeredList) {
 			totalAU += registeredCourse.getCourse().getAU();
 		}
-		return (totalAU > 21); // can change number to fit maximum number of AUs
+		return (totalAU <= 21); // can change number to fit maximum number of AUs
 	}
 
 	/**
@@ -235,7 +244,7 @@ public class StudentMgr extends CourseMgr {
 			throws EOFException, ClassNotFoundException, IOException {
 		System.out.println("Course code: " + courseCode);
 		System.out.println("Index number: " + indexNum);
-		System.out.println("Number of vacancies: " + super.checkVacancies(courseCode, indexNum));
+		System.out.println("Number of vacancies: " + super.checkVacancies(courseCode, indexNum) + "\n");
 		return 0;
 	}
 
