@@ -3,11 +3,6 @@ package entity;
 import java.util.*;
 
 public class Student extends User {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String firstName;
 	private String lastName;
 	private String matricNum;
@@ -187,9 +182,4 @@ public class Student extends User {
 	public void addToCoursesRegistered(RegisteredCourse course) {
 		this.coursesRegistered.add(course);
 	}
-	
-	public void removeFromCoursesRegistered(RegisteredCourse course,int i) {
-		this.coursesRegistered.remove(i);
-	}
-
 }
