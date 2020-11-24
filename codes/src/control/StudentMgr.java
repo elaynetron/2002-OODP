@@ -114,6 +114,7 @@ public class StudentMgr extends CourseMgr {
 		System.out.println("Student " + this.student.getUsername() + "'s Registered Courses");
 		Course course;
 		Index index;
+		String examDate;
 		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
         if (!registeredList.isEmpty()) {
 		    for (RegisteredCourse registeredCourse : registeredList) {
@@ -143,6 +144,7 @@ public class StudentMgr extends CourseMgr {
 			throws EOFException, ClassNotFoundException, IOException {
 		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
 		Course course = getCourse(courseCode); // method to get course from coursecode
+		boolean success = false;
 		for (RegisteredCourse registeredCourse : registeredList) {
 			if (registeredCourse.getCourse().getCourseCode().compareTo(courseCode) == 0) {
 				Index newIndex = getIndex(courseCode, indexNum);
