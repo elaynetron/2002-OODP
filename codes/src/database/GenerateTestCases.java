@@ -45,20 +45,20 @@ public class GenerateTestCases {
 			onelineArray = oneline.split(">");
 			startDateTime = onelineArray[10];
 			date = Integer.parseInt(startDateTime.substring(0, 2));
-			month = Integer.parseInt(startDateTime.substring(2, 4)) - 1;
+			month = Integer.parseInt(startDateTime.substring(2, 4)) -1; // format due to Gregorian calendar
 			year = Integer.parseInt(startDateTime.substring(4, 8));
 			hour = Integer.parseInt(startDateTime.substring(9, 11));
 			minute = Integer.parseInt(startDateTime.substring(12));
-			start.clear();
+			start = Calendar.getInstance();
 			start.set(year, month, date, hour, minute, 0);
 
 			endDateTime = onelineArray[11];
 			date = Integer.parseInt(endDateTime.substring(0, 2));
-			month = Integer.parseInt(endDateTime.substring(2, 4)) - 1;
+			month = Integer.parseInt(endDateTime.substring(2, 4)) -1; // format due to Gregorian calendar
 			year = Integer.parseInt(endDateTime.substring(4, 8));
 			hour = Integer.parseInt(endDateTime.substring(9, 11));
 			minute = Integer.parseInt(endDateTime.substring(12));
-			end.clear();
+			end = Calendar.getInstance();
 			end.set(year, month, date, hour, minute, 0);
 
 			student = new Student(onelineArray[1], onelineArray[2], onelineArray[3], onelineArray[4], onelineArray[5],
