@@ -30,7 +30,6 @@ public class LoginMgr {
 		ArrayList<Student> studentList = DataMgr.readStudentList();
 		for (Student student: studentList) {
 			if (student.getUsername().compareTo(username) == 0) {
-				System.out.println(password);
 				if (PasswordMgr.isExpectedPassword(password, student.getSalt(), student.getHashedPassword())) {
 					if (validateAccessTime(student)) return "Successful login!";
 					return "Invalid Access Time!";
@@ -53,7 +52,7 @@ public class LoginMgr {
 		Calendar startAccessTime = student.getStart();
 		Calendar endAccessTime = student.getEnd();
 		Calendar currentTime = Calendar.getInstance();
-		if ((currentTime.compareTo(startAccessTime) >= 0) && (currentTime.compareTo(endAccessTime) <= 0)) return true;
+		if ((currentTime.compareTo(startAccessTime) > 0) && (currentTime.compareTo(endAccessTime) < 0)) return true;
 		else return false;
 	}
 }
