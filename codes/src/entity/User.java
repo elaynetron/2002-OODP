@@ -4,15 +4,11 @@ import java.io.Serializable;
 
 import control.PasswordMgr;
 
-public abstract class User implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public abstract class User implements Serializable {
 	private String username;
 	private byte[] hashedPassword;
 	private byte[] salt;
-	
+
 	public User(String username, String password) {
 		this.setUsername(username);
 		this.setSalt();
@@ -30,11 +26,11 @@ public abstract class User implements Serializable{
 	public byte[] getSalt() {
 		return this.salt;
 	}
-	
+
 	public void setSalt() {
 		this.salt = PasswordMgr.getNextSalt();
 	}
-	
+
 	public byte[] getHashedPassword() {
 		return this.hashedPassword;
 	}
