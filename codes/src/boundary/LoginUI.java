@@ -1,9 +1,8 @@
 package boundary;
 
-import java.io.Console;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
-import java.util.Scanner;
+import java.util.*;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -84,7 +83,9 @@ public class LoginUI {
 						else password = new String( System.console().readPassword( "%s> ", message ) );
 						
 						validation = loginMgr.validateStudent(username, password.toString());
+						System.out.println();
 						System.out.println(validation);
+						System.out.println();
 					} while (!(validation == "Successful login!"));
 					new StudentUI(this.sc, loginMgr.getStudent(username));
 					break;
