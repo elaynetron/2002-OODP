@@ -1,13 +1,17 @@
-package boundary
+package boundary;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Scanner;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import control.AdminMgr;
 import control.CourseMgr;
 import entity.Admin;
+import entity.Index;
+import entity.Lesson;
 
 public class AdminUI extends CourseUI{
     private Scanner sc;
@@ -74,7 +78,7 @@ public class AdminUI extends CourseUI{
 
     }
 
-    private void editStudentAccessPeriodUI(){
+    private void editStudentAccessPeriodUI() throws EOFException, ClassNotFoundException, IOException{
         String matricNum;
         int startYear = 0, startMonth = 0, startDay = 0, startHour = 0, startMinute = 0;
         Calendar startDate = Calendar.getInstance();
@@ -217,8 +221,10 @@ public class AdminUI extends CourseUI{
         System.out.format("New Period: %s to %s", startDate, endDate );
     }
 
-    private void addStudentUI(){
-        String username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email;
+    private void addStudentUI() throws EOFException, ClassNotFoundException, IOException{
+        String username, password, firstName, lastName, matricNum, nationality, email;
+		int mobileNum = 0;
+		char gender = 0;
         int startYear = 0, startMonth = 0, startDay = 0, startHour = 0, startMinute = 0;
         Calendar startDate = Calendar.getInstance();
         int endYear = 0, endMonth = 0, endDay = 0, endHour = 0, endMinute = 0;
@@ -239,12 +245,34 @@ public class AdminUI extends CourseUI{
             existMatric = AdminMgr.validateMatric(matricNum);
             if (existMatric) System.out.println("Matric Number already exists, please try again. ");
         } while (existMatric);
-        System.out.print("Gender: ");
-        gender = sc.nextLine();
+        
+        boolean validGender;
+        do {
+        	System.out.print("Gender: ");
+	        try {
+	        	gender = sc.nextLine().charAt(0);
+	        	validGender = true;
+	        } catch (Exception e) {
+	        	System.out.println("Invalid, please try again. ");
+	        	validGender = false;
+	        }
+        } while (!validGender);
+        
         System.out.print("Nationality: ");
         nationality = sc.nextLine();
-        System.out.print("Mobile Number: ");
-        mobileNum = sc.nextLine();
+        
+        boolean validMobileNum;
+        do {
+        	System.out.print("Mobile Number: ");
+	        try {
+	        	mobileNum = Integer.parseInt(sc.nextLine());
+	        	validMobileNum = true;
+	        } catch (Exception e) {
+	        	System.out.println("Invalid, please try again. ");
+	        	validMobileNum = false;
+	        }
+        } while (!validMobileNum);
+        
         System.out.print("Email: ");
         email = sc.nextLine();
 
@@ -377,7 +405,7 @@ public class AdminUI extends CourseUI{
         AdminMgr.addStudent(username, password, firstName, lastName, matricNum, gender, nationality, mobileNum, email, startDate, endDate);
         System.out.format("New Student %s Created", username);
     }
-    private void deleteStudentUI(){
+    private void deleteStudentUI() throws EOFException, ClassNotFoundException, IOException{
         String matricNum;
         System.out.println("Deleting Student... ");
         boolean validMatric;
@@ -392,28 +420,30 @@ public class AdminUI extends CourseUI{
 
     }
 
-    private void printStudentListByCourseUI(){
+    private void printStudentListByCourseUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode;
         System.out.println("Printing Student List By Course... ");
         boolean validCourse;
+        CourseMgr coursemgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = coursemgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         AdminMgr.printStudentListByCourse(courseCode);
     }
 
-    private void printStudentListByIndexUI(){
+    private void printStudentListByIndexUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode;
         int indexNum=0;
         System.out.println("Printing Student List By Index... ");
         boolean validCourse;
+        CourseMgr coursemgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = coursemgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         boolean exception;
@@ -429,24 +459,25 @@ public class AdminUI extends CourseUI{
                 exception = true;
             }
             if (!exception) { // input is valid (integer)
-                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                validIndexNum = coursemgr.validateIndexNum(courseCode, indexNum);
                 if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
             }
         } while (!validIndexNum);
         AdminMgr.printStudentListByIndex(courseCode, indexNum);
     }
 
-    private void addCourseUI(){
+    private void addCourseUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode, courseName, school, courseType;
         int AU = 0;
         int examDateYear = 0, examDateMonth = 0, examDateDay = 0, examDateHour = 0, examDateMinute = 0;
         Calendar examDate = Calendar.getInstance();
         System.out.println("Adding New Course... ");
         boolean existCourse;
+        CourseMgr coursemgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            existCourse = CourseMgr.validateCourse(courseCode);
+            existCourse = coursemgr.validateCourse(courseCode);
             if (existCourse) System.out.println("Course code already exists, please try again. ");
         } while (existCourse);
         System.out.print("Course Name: ");
@@ -595,40 +626,39 @@ public class AdminUI extends CourseUI{
                 System.out.println("Invalid, please try again.\n");
             }
         } while (choice != 0);
-
-
     }
 
-
-    private void updateCourseCodeUI(){
+    private void updateCourseCodeUI() throws EOFException, ClassNotFoundException, IOException{
         String oldCourseCode, newCourseCode;
         System.out.println("Updating Course Code...");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Old Course code: ");
             oldCourseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(oldCourseCode);
+            validCourse = courseMgr.validateCourse(oldCourseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         boolean existCourse;
         do {
             System.out.print("New Course code: ");
             newCourseCode = sc.nextLine();
-            existCourse = CourseMgr.validateCourse(newCourseCode);
+            existCourse = courseMgr.validateCourse(newCourseCode);
             if (existCourse) System.out.println("Course code already exists, please try again. ");
         } while (existCourse);
         AdminMgr.updateCourseCode(oldCourseCode, newCourseCode);
         System.out.format("Course Code %s Updated to %s", oldCourseCode, newCourseCode);
     }
 
-    private void updateCourseNameUI(){
+    private void updateCourseNameUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode, courseName;
         System.out.println("Updating Course Name... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         System.out.print("New Course Name: ");
@@ -637,15 +667,16 @@ public class AdminUI extends CourseUI{
         System.out.format("Course %s/'s Name Changed to %s", courseCode, courseName);
     }
 
-    private void updateAUUI(){
+    private void updateAUUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode;
         int AU=0;
         System.out.println("Updating Course AU... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         boolean validAU;
@@ -664,14 +695,15 @@ public class AdminUI extends CourseUI{
         System.out.format("Course %s/'s AU Changed to %d", courseCode, AU);
     }
 
-    private void updateSchoolUI(){
+    private void updateSchoolUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode, school;
         System.out.println("Updating School... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         System.out.print("New School: ");
@@ -680,14 +712,15 @@ public class AdminUI extends CourseUI{
         System.out.format("Course %s/'s School Changed to %s", courseCode, school);
     }
 
-    private void updateCourseTypeUI(){
+    private void updateCourseTypeUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode, courseType;
         System.out.println("Updating Course Type... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.println("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         System.out.print("New Course Type: ");
@@ -696,16 +729,17 @@ public class AdminUI extends CourseUI{
         System.out.format("Course %s/'s Type Changed to %s", courseCode, courseType);
     }
 
-    private void updateExamDateUI(){
+    private void updateExamDateUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode;
         int examDateYear = 0, examDateMonth = 0, examDateDay = 0, examDateHour = 0, examDateMinute = 0;
         Calendar examDate = Calendar.getInstance();
         System.out.println("Updating Exam Date... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         System.out.println("New Exam Date: ");
@@ -775,15 +809,16 @@ public class AdminUI extends CourseUI{
         System.out.format("Course %s/'s Exam Date Changed to %s", courseCode, examDate);
     }
 
-    private void addIndexUI(){
+    private void addIndexUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode;
         int indexNum=0;
         System.out.println("Adding Index... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         boolean exception;
@@ -799,24 +834,68 @@ public class AdminUI extends CourseUI{
                 exception = true;
             }
             if (!exception) { // input is valid (integer)
-                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                validIndexNum = courseMgr.validateIndexNum(courseCode, indexNum);
                 if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
             }
         } while (!validIndexNum);
+        
+        int vacancy = 0;
+        boolean validVacancy = false;
+        do {
+        	System.out.print("Vacancy: ");
+        	try {
+        		vacancy = Integer.parseInt(sc.nextLine());
+        		validVacancy = true;
+        	} catch (Exception e) {
+        		System.out.println("Invalid, please try again. ");
+        		validVacancy = false;
+        	}
+        } while (!validVacancy);
+        
+        System.out.println("Lesson Information: ");
+        System.out.println("Enter in format of TYPE>TUTORIALGRP>DAY>VENUE>START>END>REMARKS");
+        System.out.println("Enter 'Q' to end");
+        String[] lessonInfo;
+        Calendar start = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        String remarks;
+        ArrayList<Lesson> lessonList = new ArrayList<Lesson>();
+        String lessonInput = sc.nextLine();
+        while (lessonInput.compareTo("Q") != 0){
+        	try {
+				lessonInfo = lessonInput.split(">");
+				start.clear(); // reset calendar values
+				start.set(Calendar.HOUR, Integer.parseInt(lessonInfo[4].substring(0,2)));
+				start.set(Calendar.MINUTE, Integer.parseInt(lessonInfo[4].substring(3)));
+				end.clear(); // reset calendar values
+				end.set(Calendar.HOUR, Integer.parseInt(lessonInfo[5].substring(0,2)));
+				end.set(Calendar.MINUTE, Integer.parseInt(lessonInfo[5].substring(3)));
+				try {
+					remarks = lessonInfo[6];
+				} catch (Exception e) {
+					remarks = "";
+				}
+				lessonList.add(new Lesson(lessonInfo[0], lessonInfo[1], Integer.parseInt(lessonInfo[2]), lessonInfo[3], start, end, remarks));
+			} catch (Exception e) {
+				System.out.println("Invalid, please try again. ");
+			}
+        	lessonInput = sc.nextLine();
+		}
 
-        AdminMgr.addIndex(courseCode, indexNum);
+        AdminMgr.addIndex(courseCode, indexNum, vacancy, lessonList);
         System.out.format("Added Index %d to Course %s", indexNum, courseCode);
     }
 
-    private void deleteIndexUI(){
+    private void deleteIndexUI() throws EOFException, ClassNotFoundException, IOException{
         String courseCode;
         int indexNum=0;
         System.out.println("Deleting Index... ");
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         boolean exception;
@@ -832,7 +911,7 @@ public class AdminUI extends CourseUI{
                 exception = true;
             }
             if (!exception) { // input is valid (integer)
-                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                validIndexNum = courseMgr.validateIndexNum(courseCode, indexNum);
                 if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
             }
         } while (!validIndexNum);
@@ -841,16 +920,17 @@ public class AdminUI extends CourseUI{
         System.out.format("Index %d Deleted", indexNum);
     }
 
-    private void updateVacancyUI() {
+    private void updateVacancyUI() throws EOFException, ClassNotFoundException, IOException {
         String courseCode;
         int indexNum=0;
         int newVacancy=0;
         boolean validCourse;
+        CourseMgr courseMgr = new CourseMgr();
         System.out.println("Updating Vacancy...");
         do {
             System.out.print("Course code: ");
             courseCode = sc.nextLine();
-            validCourse = CourseMgr.validateCourse(courseCode);
+            validCourse = courseMgr.validateCourse(courseCode);
             if (!validCourse) System.out.println("Course does not exist, please try again. ");
         } while (!validCourse);
         boolean exception;
@@ -866,7 +946,7 @@ public class AdminUI extends CourseUI{
                 exception = true;
             }
             if (!exception) { // input is valid (integer)
-                validIndexNum = CourseMgr.validateIndexNum(courseCode, indexNum);
+                validIndexNum = courseMgr.validateIndexNum(courseCode, indexNum);
                 if (!validIndexNum) System.out.println("Index does not exist, please try again. ");
             }
         } while (!validIndexNum);
