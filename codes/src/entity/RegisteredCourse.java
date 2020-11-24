@@ -1,6 +1,8 @@
 package entity;
 
-public class RegisteredCourse {
+import java.io.Serializable;
+
+public class RegisteredCourse implements Serializable{
 	private Student student;
 	private Course course;
 	private Index index;
@@ -14,7 +16,7 @@ public class RegisteredCourse {
 	}
 
 	public Student getStudent() {
-		return student;
+		return this.student;
 	}
 
 	public void setStudent(Student student) {
@@ -34,7 +36,7 @@ public class RegisteredCourse {
 	}
 
 	public Index getIndex() {
-		return null;
+		return this.index;
 	}
 
 	public void setStatus(String status) {
