@@ -56,6 +56,7 @@ public class LoginUI {
 						else password = new String( System.console().readPassword( "%s> ", message ) );
 						
 						validation = loginMgr.validateAdmin(username, password.toString());
+						System.out.println();
 						System.out.println(validation);
 						System.out.println();
 					} while (!(validation == "Successful login!"));
