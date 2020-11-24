@@ -109,6 +109,7 @@ public class StudentUI extends CourseUI {
 			}
 			if (!exception) { // input is valid (integer)
 				validIndexNum = this.studentMgr.validateIndexNum(courseCode, indexNum);
+				if (!validIndexNum) System.out.println("Invalid index, please try again. ");
 			}
 		} while (!validIndexNum);
 		this.studentMgr.addCourse(courseCode, indexNum);
@@ -162,6 +163,7 @@ public class StudentUI extends CourseUI {
 			}
 			if (!exception) { // input is valid (integer)
 				validIndexNum = this.studentMgr.validateIndexNum(courseCode, indexNum);
+				if (!validIndexNum) System.out.println("Index number is not valid.\n");
 			}
 		} while (!validIndexNum);
 
