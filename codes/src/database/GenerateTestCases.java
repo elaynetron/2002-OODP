@@ -51,6 +51,7 @@ public class GenerateTestCases {
 			minute = Integer.parseInt(startDateTime.substring(12));
 			start = Calendar.getInstance();
 			start.set(year, month, date, hour, minute, 0);
+			start.set(Calendar.MILLISECOND, 0);
 
 			endDateTime = onelineArray[11];
 			date = Integer.parseInt(endDateTime.substring(0, 2));
@@ -60,6 +61,7 @@ public class GenerateTestCases {
 			minute = Integer.parseInt(endDateTime.substring(12));
 			end = Calendar.getInstance();
 			end.set(year, month, date, hour, minute, 0);
+			end.set(Calendar.MILLISECOND, 0);
 
 			student = new Student(onelineArray[1], onelineArray[2], onelineArray[3], onelineArray[4], onelineArray[5],
 					onelineArray[6].charAt(0), onelineArray[7], Integer.parseInt(onelineArray[8]), onelineArray[9],
@@ -102,11 +104,13 @@ public class GenerateTestCases {
 					currentIndexNum = Integer.parseInt(reader.nextLine());
 				} else if (!oneline.isEmpty()) { // Lesson Information
 					lessonInfo = oneline.split(">");
-					start.clear(); // reset calendar values
-					start.set(Calendar.HOUR, Integer.parseInt(lessonInfo[4].substring(0, 2)));
+					start = Calendar.getInstance(); // reset calendar values
+					start.set(Calendar.MILLISECOND, 0); 
+					start.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lessonInfo[4].substring(0, 2)));
 					start.set(Calendar.MINUTE, Integer.parseInt(lessonInfo[4].substring(3)));
-					end.clear(); // reset calendar values
-					end.set(Calendar.HOUR, Integer.parseInt(lessonInfo[5].substring(0, 2)));
+					end = Calendar.getInstance(); // reset calendar values
+					end.set(Calendar.MILLISECOND, 0); 
+					end.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lessonInfo[5].substring(0, 2)));
 					end.set(Calendar.MINUTE, Integer.parseInt(lessonInfo[5].substring(3)));
 					try {
 						remarks = lessonInfo[6];
@@ -120,7 +124,8 @@ public class GenerateTestCases {
 			}
 			indexList.add(new Index(currentIndexNum, numOfVacancies, null, lessonList));
 
-			examDate.clear(); // reset
+			examDate = Calendar.getInstance(); // reset calendar values
+			examDate.set(Calendar.MILLISECOND, 0); 
 			examDate.set(Integer.parseInt(courseInfo[5].substring(4)), Integer.parseInt(courseInfo[5].substring(2, 4)),
 					Integer.parseInt(courseInfo[5].substring(0, 2)));
 			course = new Course(courseInfo[0], courseInfo[1], Integer.parseInt(courseInfo[2]), courseInfo[3],
