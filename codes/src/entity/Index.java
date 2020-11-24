@@ -1,7 +1,11 @@
 package entity;
 
+import java.io.EOFException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import control.DataMgr;
 
 public class Index implements Serializable{
     private int indexNum;
@@ -17,7 +21,7 @@ public class Index implements Serializable{
     }
 
 	public int getIndexNum() {
-        return indexNum;
+        return this.indexNum;
     }
 
     public void setIndexNum(int indexNum) {
@@ -25,7 +29,20 @@ public class Index implements Serializable{
     }
 
     public int getVacancy() {
-        return vacancy;
+    	return this.vacancy;
+    }
+    
+    public int getVacancy(String courseCode) throws EOFException, ClassNotFoundException, IOException{
+    	int numOfVacancies = 10;
+        ArrayList<Student> studentList = DataMgr.readStudentList();
+        for (Student student: studentList) {
+        	for (RegisteredCourse registeredCourse: student.getCoursesRegistered()) {
+        		if (registeredCourse.getCourse().getCourseCode().compareTo(courseCode) == 0) {
+        			if (this.indexNum == registeredCourse.getIndex().getIndexNum()) numOfVacancies--;
+        		}
+        	}
+        }
+        return numOfVacancies;
     }
 
     public void setVacancy(int vacancy) {
@@ -33,7 +50,7 @@ public class Index implements Serializable{
     }
 
     public ArrayList<Student> getWaitList() {
-        return waitList;
+        return this.waitList;
     }
 
     public void setWaitList(ArrayList<Student> waitList) {
@@ -41,7 +58,7 @@ public class Index implements Serializable{
     }
 
     public ArrayList<Lesson> getLessonList() {
-        return lessonList;
+        return this.lessonList;
     }
 
     public void setLessonList(ArrayList<Lesson> lessonList) {
