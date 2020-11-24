@@ -20,7 +20,7 @@ public class CourseMgr {
 		if (indexNum == null) {
 			return -1;
 		}
-		return indexNum.getVacancy();
+		return indexNum.getVacancy(courseCode);
 	}
 
 	public boolean validateCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException {
@@ -63,7 +63,7 @@ public class CourseMgr {
 
 	private Index filterCourseByCourseCodeAndIndexNum(String courseCode, int indexNumber)
 			throws EOFException, ClassNotFoundException, IOException {
-		List<Course> courseList = DataMgr.readCourseList();
+		ArrayList<Course> courseList = DataMgr.readCourseList();
 		return courseList.stream().filter(course -> course.getCourseCode().equalsIgnoreCase(courseCode))
 				.flatMap(course -> course.getIndexList().stream())
 				.filter(indexNum -> indexNumber == indexNum.getIndexNum()).findAny().orElse(null);
