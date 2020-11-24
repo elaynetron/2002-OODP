@@ -40,7 +40,7 @@ public class StudentUI extends CourseUI {
 			System.out.println("[3] Check courses registered");
 			System.out.println("[4] Change course index number");
 			System.out.println("[5] Swap course index number");
-			System.out.println("[6] Send notification");
+			System.out.println("[6] Choose notification method");
 			System.out.println("[7] Check vacancies available");
 			System.out.println("[8] Quit Application");
 
@@ -76,9 +76,7 @@ public class StudentUI extends CourseUI {
 				default:
 					System.out.println("Invalid, please try again.\n");
 				}
-			} catch (Exception e) {
-				System.out.println("Invalid, please try again.\n");
-			}
+			} catch (Exception e) {}
 
 		} while (choice != 9);
 	}
@@ -96,20 +94,21 @@ public class StudentUI extends CourseUI {
 				System.out.println("Course does not exist, please try again.\n");
 		} while (!validCourse);
 
-		boolean exception = false;
+		boolean exception;
 		boolean validIndexNum = false;
 		int indexNum = 0;
 		do {
+			exception = false;
 			System.out.println("Enter index number: ");
 			try {
 				indexNum = Integer.parseInt(sc.nextLine());
 			} catch (Exception e) {
-				System.out.println("Invalid, please try again. ");
+				System.out.println("Invalid, please try again. \n");
 				exception = true;
 			}
 			if (!exception) { // input is valid (integer)
 				validIndexNum = this.studentMgr.validateIndexNum(courseCode, indexNum);
-				if (!validIndexNum) System.out.println("Invalid index, please try again. ");
+				if (!validIndexNum) System.out.println("Invalid index, please try again. \n");
 			}
 		} while (!validIndexNum);
 		this.studentMgr.addCourse(courseCode, indexNum);
