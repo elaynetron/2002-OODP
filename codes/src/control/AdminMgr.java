@@ -1,10 +1,11 @@
 package control;
 
+import entity.Student;
+import entity.RegisteredCourse;
+
 import java.io.*;
 import java.util.*;
 
-import entity.Student;
-import entity.RegisteredCourse;
 import entity.Course;
 import entity.Index;
 import entity.Lesson;
@@ -17,6 +18,7 @@ public class AdminMgr extends CourseMgr{
             if (student.getMatricNum().compareTo(matricNum) == 0) {
                 student.setStart(startTime);
                 student.setEnd(endTime);
+                DataMgr.updateStudentList(student);
             }
         }
     }
@@ -38,8 +40,6 @@ public class AdminMgr extends CourseMgr{
             }
         }
         DataMgr.writeStudentList(studentList);
-
-
     }
 
     public static void printStudentListByCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException{
@@ -47,8 +47,7 @@ public class AdminMgr extends CourseMgr{
         ArrayList<RegisteredCourse> courseList;
         for (Student student: studentList) {
             courseList = student.getCoursesRegistered();
-            for (RegisteredCourse course: courseList)
-            {
+            for (RegisteredCourse course: courseList) {
                 if(course.getCourse().getCourseCode().compareTo(courseCode) == 0)
                  System.out.print(student.getFirstName()+" "+student.getLastName()+" "+student.getGender()+" "+student.getNationality());
             }
@@ -66,9 +65,7 @@ public class AdminMgr extends CourseMgr{
                 if(course.getCourse().getCourseCode().compareTo(courseCode) == 0 && course.getIndex().getIndexNum() == indexNum)
                     System.out.print(student.getFirstName()+" "+student.getLastName()+" "+student.getGender()+" "+student.getNationality());
             }
-
         }
-
     }
 
     public static void addCourse(String courseCode, String courseName, int AU, String school, String courseType, Calendar examDate) throws EOFException, ClassNotFoundException, IOException{
@@ -86,6 +83,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void updateCourseName(String courseCode, String courseName) throws EOFException, ClassNotFoundException, IOException{
@@ -96,6 +94,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void updateAU(String courseCode, int AU) throws EOFException, ClassNotFoundException, IOException{
@@ -106,6 +105,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void updateSchool(String courseCode, String school) throws EOFException, ClassNotFoundException, IOException{
@@ -116,6 +116,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void updateCourseType(String courseCode, String courseType) throws EOFException, ClassNotFoundException, IOException{
@@ -126,6 +127,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void updateExamDate(String courseCode, Calendar examDate) throws EOFException, ClassNotFoundException, IOException{
@@ -136,6 +138,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void addIndex(String courseCode, int indexNum, int vacancy, ArrayList<Lesson> lessonList) throws EOFException, ClassNotFoundException, IOException{
@@ -149,6 +152,7 @@ public class AdminMgr extends CourseMgr{
                 break;
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void deleteIndex(String courseCode, int indexNum) throws EOFException, ClassNotFoundException, IOException{
@@ -164,6 +168,7 @@ public class AdminMgr extends CourseMgr{
                 }
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static void updateVacancy(String courseCode, int indexNum, int newVacancy) throws EOFException, ClassNotFoundException, IOException{
@@ -179,6 +184,7 @@ public class AdminMgr extends CourseMgr{
                 }
             }
         }
+        DataMgr.writeCourseList(courseList);
     }
 
     public static boolean validateMatric(String matricNum) throws EOFException, ClassNotFoundException, IOException {
