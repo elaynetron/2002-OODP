@@ -39,20 +39,23 @@ public class StudentMgr extends CourseMgr {
 
 				if (vacancy > 0) {
 					RegisteredCourse toRegister = new RegisteredCourse(this.student, course, index, "Registered");
-					student.addToCoursesRegistered(toRegister);
-					System.out.println("Course successfully registered.");
-					NotificationMgr.sendEmail(this.student, courseCode);
+					this.student.addToCoursesRegistered(toRegister);
+					updateVacancy(courseCode, indexNum, -1);
+					System.out.println("Course successfully registered.\n");
+					//TODO
+					//NotificationMgr.sendEmail(this.student, courseCode);
 				} else {
 					RegisteredCourse toRegister = new RegisteredCourse(this.student, course, index, "Waitlist");
-					student.addToCoursesRegistered(toRegister);
+					this.student.addToCoursesRegistered(toRegister);
 					updateWaitList(course, index);
-					System.out.println("Course added to waitlist.");
+					System.out.println("Course added to waitlist.\n");
 				}
+				DataMgr.updateCourseList(course);
 			} else
-				System.out.println("Failed to register for course - Reached maximum number of AUs.");
+				System.out.println("Failed to register for course - Reached maximum number of AUs.\n");
 		} else
-			System.out.println("Failed to register for course - Course clashes with other registered courses.");
-		DataMgr.updateStudentList(student);
+			System.out.println("Failed to register for course - Course clashes with other registered courses.\n");
+		DataMgr.updateStudentList(this.student);
 	}
 
 	/**
@@ -76,22 +79,24 @@ public class StudentMgr extends CourseMgr {
 	 * @throws EOFException
 	 */
 	public void dropCourse(String courseCode) throws EOFException, ClassNotFoundException, IOException {
-		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
+		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
 		Course course = getCourse(courseCode);
 		Index index = null;
+		boolean dropped = false;
 		for (RegisteredCourse registeredCourse : registeredList) {
-			if (registeredCourse.getCourse().equals(course)) {
+			if (registeredCourse.getCourse().getCourseCode().compareTo(courseCode) == 0) {
 				registeredList.remove(registeredCourse);
+				this.student.setCoursesRegistered(registeredList);
 				index = registeredCourse.getIndex();
-				System.out.println("Course dropped successfully.");
-				return;
+				System.out.println("Course dropped successfully.\n");
+				dropped = true;
 			}
 		}
-		System.out.println("You are not registered for the course!");
+		if (!dropped) System.out.println("You are not registered for the course!");
 		DataMgr.updateStudentList(this.student);
 
 		ArrayList<Student> waitList = index.getWaitList();
-		index.setVacancy(index.getVacancy() + 1);
+		updateVacancy(courseCode, index.getIndexNum(), 1);
 		Student studentToInform = waitList.get(0);
 		waitList.remove(studentToInform);
 		ArrayList<RegisteredCourse> studentToInformRegisteredList = studentToInform.getCoursesRegistered();
@@ -101,7 +106,8 @@ public class StudentMgr extends CourseMgr {
 				System.out.println("Student " + studentToInform.getUsername() + " has been informed.");
 			}
 		}
-		NotificationMgr.sendEmail(studentToInform, courseCode);
+		//TODO
+		//NotificationMgr.sendEmail(studentToInform, courseCode);
 		DataMgr.updateCourseList(course);
 		DataMgr.updateStudentList(studentToInform);
 	}
@@ -110,17 +116,23 @@ public class StudentMgr extends CourseMgr {
 		System.out.println("Student " + this.student.getUsername() + "'s Registered Courses");
 		Course course;
 		Index index;
-		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
-		for (RegisteredCourse registeredCourse : registeredList) {
-			course = registeredCourse.getCourse();
-			System.out.println(course.getCourseCode() + " " + course.getCourseName());
-			System.out.println("AU: " + course.getAU() + " | School: " + course.getSchool() + " |  Type: "
-					+ course.getCourseType());
-			System.out.println("Exam Date: " + course.getExamDate().toString());
-
-			index = registeredCourse.getIndex();
-			System.out.println("Index Number: " + index.getIndexNum());
-			System.out.println();
+		String examDate;
+		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
+		if (!registeredList.isEmpty()) {
+			for (RegisteredCourse registeredCourse : registeredList) {
+				course = registeredCourse.getCourse();
+				System.out.println(course.getCourseCode() + " " + course.getCourseName());
+				System.out.println("AU: " + course.getAU() + " | School: " + course.getSchool() + " |  Type: "
+						+ course.getCourseType());
+				examDate = Integer.toString(course.getExamDate().get(Calendar.DAY_OF_MONTH)) + Integer.toString(course.getExamDate().get(Calendar.MONTH)+1) + Integer.toString(course.getExamDate().get(Calendar.YEAR));
+				if (examDate.compareTo("31122") != 0) { // Gregorian calendar format, meaning 00/00/0000
+					System.out.format("Exam Date: " + examDate.substring(0,2) + "/" + examDate.substring(2,4) + "/" + examDate.substring(4) + "\n");
+				}
+	
+				index = registeredCourse.getIndex();
+				System.out.println("Index Number: " + index.getIndexNum());
+				System.out.println();
+			}
 		}
 		System.out.println();
 	}
@@ -135,19 +147,27 @@ public class StudentMgr extends CourseMgr {
 	 */
 	public void changeIndexNum(String courseCode, int indexNum)
 			throws EOFException, ClassNotFoundException, IOException {
-		ArrayList<RegisteredCourse> registeredList = student.getCoursesRegistered();
+		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
 		Course course = getCourse(courseCode); // method to get course from coursecode
 		boolean success = false;
 		for (RegisteredCourse registeredCourse : registeredList) {
-			if (registeredCourse.getCourse().equals(course)) {
-				dropCourse(courseCode);
-				addCourse(courseCode, indexNum);
-				System.out.println("Index number changed succesfully.");
-				success = true;
-				break;
+			if (registeredCourse.getCourse().getCourseCode().compareTo(courseCode) == 0) {
+				Index newIndex = getIndex(courseCode, indexNum);
+				if (newIndex.getVacancy() > 0) {
+					Index oldIndex = registeredCourse.getIndex();
+					updateVacancy(courseCode, oldIndex.getIndexNum(), 1);
+					updateVacancy(courseCode, newIndex.getIndexNum(), -1);
+					DataMgr.updateCourseList(registeredCourse.getCourse());
+					registeredCourse.setIndex(newIndex);
+					System.out.println("Successfully changed index number.\n");
+					success = true;
+					break;
+				}
 			}
 		}
+		this.student.setCoursesRegistered(registeredList);
 		if (!success) System.out.println("You are not registered for this course, please try again.\n");
+		DataMgr.updateStudentList(this.student);
 	}
 
 	/**
@@ -162,21 +182,20 @@ public class StudentMgr extends CourseMgr {
 	 */
 	public void swapIndexNum(Student peer, String courseCode, int selfIndexNum, int peerIndexNum)
 			throws EOFException, ClassNotFoundException, IOException {
-		Course toSwap = getCourse(courseCode);
 		ArrayList<RegisteredCourse> selfCourses = this.student.getCoursesRegistered();
 		ArrayList<RegisteredCourse> peerCourses = peer.getCoursesRegistered();
 		StudentMgr peerMgr = new StudentMgr(peer);
 		boolean success = false;
 		for (RegisteredCourse selfRegCourse : selfCourses) {
 			for (RegisteredCourse peerRegCourse : peerCourses) {
-				if (selfRegCourse.getCourse().equals(toSwap) && peerRegCourse.getCourse().equals(toSwap)) {
-					dropCourse(courseCode);
-					peerMgr.dropCourse(courseCode);
-					addCourse(courseCode, peerIndexNum);
-					peerMgr.addCourse(courseCode, selfIndexNum);
-					System.out.println("Index number successfully swapped.");
-					success = true;
-					break;
+				if (selfRegCourse.getCourse().getCourseCode().compareTo(courseCode) == 0 && peerRegCourse.getCourse().getCourseCode().compareTo(courseCode) == 0) {
+					if (selfRegCourse.getIndex().getIndexNum() == selfIndexNum && peerRegCourse.getIndex().getIndexNum() == peerIndexNum) {
+						selfRegCourse.setIndex(peerRegCourse.getIndex());
+						peerRegCourse.setIndex(selfRegCourse.getIndex());
+						System.out.println("Index number successfully swapped.\n");
+						success = true;
+						break;
+					}
 				}
 			}
 		}
@@ -204,14 +223,36 @@ public class StudentMgr extends CourseMgr {
 		}
 		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
 		ArrayList<Lesson> lessonListRegistered;
-		for (RegisteredCourse registeredCourse : registeredList) {
-			lessonListRegistered = registeredCourse.getIndex().getLessonList();
-			for (Lesson lessonRegistered : lessonListRegistered) {
-				for (Lesson lesson : lessonList) {
-					if (lesson.getLessonStart().compareTo(lessonRegistered.getLessonEnd()) < 0)
-						return false;
-					if (lesson.getLessonEnd().compareTo(lessonRegistered.getLessonStart()) > 0)
-						return false;
+		if (!registeredList.isEmpty()) {
+			for (RegisteredCourse registeredCourse : registeredList) {
+				if (registeredCourse.getCourse().getCourseCode().compareTo(courseCode) == 0) return false; // ensure no repeat of course	
+				Index indexRegistered = registeredCourse.getIndex();
+					if (indexRegistered != null) {
+						lessonListRegistered = indexRegistered.getLessonList();
+						if (!lessonListRegistered.isEmpty()) {
+							for (Lesson lessonRegistered : lessonListRegistered) {
+								for (Lesson lesson : lessonList) {
+									if (lesson.getLessonDay() == lessonRegistered.getLessonDay()) {
+										int lessonStartHour = lesson.getLessonStart().get(Calendar.HOUR_OF_DAY);
+										int lessonStartMin = lesson.getLessonStart().get(Calendar.MINUTE);
+										int lessonEndHour = lesson.getLessonEnd().get(Calendar.HOUR_OF_DAY);
+										int lessonEndMin = lesson.getLessonEnd().get(Calendar.MINUTE);
+										int lessonRegisteredStartHour = lessonRegistered.getLessonStart().get(Calendar.HOUR_OF_DAY);
+										int lessonRegisteredStartMin = lessonRegistered.getLessonStart().get(Calendar.MINUTE);
+										int lessonRegisteredEndHour = lessonRegistered.getLessonEnd().get(Calendar.HOUR_OF_DAY);
+										int lessonRegisteredEndMin = lessonRegistered.getLessonEnd().get(Calendar.MINUTE);
+										if (lessonStartHour == lessonRegisteredStartHour) {
+											if (lessonStartMin == lessonRegisteredStartMin) return false;
+										}
+										if (lessonEndHour == lessonRegisteredEndHour) {
+											if (lessonEndMin == lessonRegisteredEndMin) return false;
+										}
+										if ((lessonStartHour < lessonRegisteredStartHour) && (lessonEndHour > lessonRegisteredEndHour)) return false;
+										if ((lessonStartHour > lessonRegisteredStartHour) && (lessonEndHour < lessonRegisteredEndHour)) return false;
+									}
+								}
+							}
+						}
 				}
 			}
 		}
@@ -223,8 +264,10 @@ public class StudentMgr extends CourseMgr {
 		Course course = getCourse(courseCode);
 		int totalAU = course.getAU();
 		ArrayList<RegisteredCourse> registeredList = this.student.getCoursesRegistered();
-		for (RegisteredCourse registeredCourse : registeredList) {
-			totalAU += registeredCourse.getCourse().getAU();
+		if (!registeredList.isEmpty()) {
+			for (RegisteredCourse registeredCourse : registeredList) {
+				totalAU += registeredCourse.getCourse().getAU();
+			}
 		}
 		return (totalAU <= 21); // can change number to fit maximum number of AUs
 	}
@@ -237,6 +280,7 @@ public class StudentMgr extends CourseMgr {
 	 */
 	public void chooseNotification(int notificationChoice) throws ClassNotFoundException, IOException {
 		this.student.setNotification(notificationChoice);
+		System.out.println("Notification method set.\n");
 		DataMgr.updateStudentList(this.student);
 	}
 
@@ -264,5 +308,20 @@ public class StudentMgr extends CourseMgr {
 				return student;
 		}
 		return null;
+	}
+	
+	private void updateVacancy(String courseCode, int indexNum, int toAdd) throws EOFException, ClassNotFoundException, IOException {
+		ArrayList<Course> courseList = DataMgr.readCourseList();
+		for (Course course: courseList) {
+			if (course.getCourseCode().compareTo(courseCode) == 0) {
+				ArrayList<Index> indexList = course.getIndexList();
+				for (Index index: indexList) {
+					if (index.getIndexNum() == indexNum) {
+						index.setVacancy(index.getVacancy() + toAdd);
+						DataMgr.updateCourseList(course);
+					}
+				}
+			}
+		}
 	}
 }
